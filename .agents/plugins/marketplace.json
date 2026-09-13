@@ -1,10 +1,20 @@
 {
-  "version": "2",
+  "name": "schematic-planner",
+  "interface": {
+    "displayName": "Schematic Planner"
+  },
   "plugins": [
     {
-      "id": "schematic-planner",
-      "displayName": "Schematic Planner",
-      "source": "https://github.com/ridanit-ruma/schematic-planner-plugin"
+      "name": "schematic-planner",
+      "source": {
+        "source": "local",
+        "path": "."
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
     }
   ]
 }

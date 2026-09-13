@@ -13,7 +13,14 @@ The canvas is the authoritative design and plan record. The plugin uses only the
 
 ## Install and configure
 
-Install the repository in the plugin manager for your harness. Claude Code and Kimi Code discover the plugin manifests and `skills/` directory; Codex uses `.codex-plugin/plugin.json`; Cursor discovers `.cursor/commands`; and OpenCode loads `.opencode/plugins/schematic-planner.js`.
+Install the repository in the plugin manager for your harness. Claude Code and Kimi Code discover the plugin manifests and `skills/` directory; Cursor discovers `.cursor/commands`; and OpenCode loads `.opencode/plugins/schematic-planner.js`.
+
+For Codex, add this repository as a marketplace and install its plugin:
+
+```sh
+codex plugin marketplace add ridanit-ruma/schematic-planner-plugin
+codex plugin add schematic-planner@schematic-planner
+```
 
 Configure the Schematic Planner MCP before use. Harness-specific instructions are in `references/mcp-setup-claude-code.md`, `references/mcp-setup-codex.md`, and `references/mcp-setup-cursor.md`. Cursor can start from `.cursor/mcp.json.example`.
 

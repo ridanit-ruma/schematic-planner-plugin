@@ -70,5 +70,19 @@ for (const path of [
 ]) {
   JSON.parse(readFileSync(path, 'utf8'))
 }
+
+const marketplace = JSON.parse(readFileSync('.agents/plugins/marketplace.json', 'utf8'))
+const entry = marketplace.plugins?.[0]
+if (
+  marketplace.name !== 'schematic-planner' ||
+  entry?.name !== 'schematic-planner' ||
+  entry?.source?.source !== 'local' ||
+  entry?.source?.path !== '.' ||
+  entry?.policy?.installation !== 'AVAILABLE' ||
+  entry?.policy?.authentication !== 'ON_INSTALL' ||
+  entry?.category !== 'Productivity'
+) {
+  throw new Error('.agents/plugins/marketplace.json does not match the Codex marketplace schema')
+}
 NODE
 node --input-type=module --eval "import('./.opencode/plugins/schematic-planner.js').then(({ SchematicPlanner }) => SchematicPlanner({}).then((hooks) => { if (typeof hooks !== 'object') process.exit(1) }))"
