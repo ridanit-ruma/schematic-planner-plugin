@@ -1,0 +1,2 @@
+#!/bin/sh
+printf '%s\n' 'Use schematic-planner:using-schematic-planner before planning work.'

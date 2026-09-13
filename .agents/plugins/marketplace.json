@@ -1,0 +1,10 @@
+{
+  "version": "2",
+  "plugins": [
+    {
+      "id": "schematic-planner",
+      "displayName": "Schematic Planner",
+      "source": "https://github.com/ridanit-ruma/schematic-planner-plugin"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "schematic-planner",
+  "version": "0.1.0",
+  "description": "Plan software work on a Schematic Planner canvas.",
+  "author": "ridanit-ruma",
+  "homepage": "https://github.com/ridanit-ruma/schematic-planner-plugin",
+  "license": "Apache-2.0",
+  "skills": "./skills/",
+  "sessionStart": {
+    "skill": "using-schematic-planner"
+  },
+  "interface": {
+    "displayName": "Schematic Planner",
+    "shortDescription": "Plan on a shared canvas."
+  }
+}
