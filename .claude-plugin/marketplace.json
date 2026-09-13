@@ -1,6 +1,6 @@
 {
-  "name": "schematic-planner-dev",
-  "description": "Development marketplace for the Schematic Planner planning skills",
+  "name": "schematic-planner",
+  "description": "Planning skills that keep the design and the plan on a Schematic Planner canvas",
   "owner": {
     "name": "ruma",
     "email": "minenaturecrew@gmail.com"

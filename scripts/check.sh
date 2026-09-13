@@ -33,7 +33,7 @@ need_text() {
     fi
 }
 
-echo "-- Task 1: the contract"
+echo "-- the contract"
 
 need_file references/mcp-surface.md
 for tool in get_plan apply_ops create_plan list_plans layout export_plan; do
@@ -48,16 +48,19 @@ for key in server workspace project plan; do
     need_text references/binding-file.md "\"$key\"" "binding-file documents \"$key\""
 done
 
-# The binding describes a consuming repository's link to its plan. A copy here,
-# with empty values, would claim this plugin is bound to nothing.
-if [ -f .schematic-planner.json ]; then
-    err ".schematic-planner.json belongs in a consuming repository, not in this one"
+# A binding may legitimately appear here once this repository is planned with
+# its own plugin. A placeholder with nothing bound may not: it documents nothing
+# that references/binding-file.md does not, and reads as a broken link.
+if [ -f .schematic-planner.json ] && grep -Eq '"plan"[[:space:]]*:[[:space:]]*""' .schematic-planner.json; then
+    err ".schematic-planner.json is here but binds no plan; the schema lives in references/binding-file.md"
+elif [ -f .schematic-planner.json ]; then
+    ok "binding file names a plan"
 else
-    ok "no stray binding file in the plugin repository"
+    ok "no binding file, and none needed yet"
 fi
 
 echo
-echo "-- Task 2: the package"
+echo "-- the package"
 
 need_file .claude-plugin/plugin.json
 need_text .claude-plugin/plugin.json '"name": "schematic-planner"' "plugin.json names the plugin"
@@ -109,12 +112,26 @@ for f in scripts/check.sh scripts/sync-harnesses.sh hooks/session-start; do
 done
 
 echo
-echo "-- Task 3: the entry point"
+echo "-- the skills"
 
-need_file skills/using-schematic-planner/SKILL.md
-need_text skills/using-schematic-planner/SKILL.md '^name: using-schematic-planner$' "entry skill declares its name"
-need_text skills/using-schematic-planner/SKILL.md '^description: .*[Uu]se when' "entry skill description says when to use it"
-need_text skills/using-schematic-planner/SKILL.md 'schematic-planner\.json' "entry skill reads the binding file"
+for s in using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas executing-plans-on-canvas; do
+    need_file "skills/$s/SKILL.md"
+    need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
+    need_text "skills/$s/SKILL.md" '^description: .*[Uu]se ' "$s says when to use it"
+done
+
+# A skill with no frontmatter is invisible to every harness that loads this.
+for skill in skills/*/SKILL.md; do
+    [ -e "$skill" ] || continue
+    if head -1 "$skill" | grep -q '^---$'; then
+        ok "frontmatter opens: $skill"
+    else
+        err "no frontmatter: $skill"
+    fi
+done
+
+echo
+echo "-- the setup references"
 
 for h in claude-code codex cursor; do
     need_file "references/mcp-setup-$h.md"
