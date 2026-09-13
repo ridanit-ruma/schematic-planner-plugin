@@ -1,0 +1,20 @@
+{
+  "name": "schematic-planner",
+  "description": "Plan on a Schematic Planner canvas instead of in Markdown: four skills that keep the design and the implementation plan in one graph both you and the agent are looking at.",
+  "version": "0.1.0",
+  "author": {
+    "name": "ruma",
+    "email": "minenaturecrew@gmail.com"
+  },
+  "homepage": "https://github.com/ridanit-ruma/schematic-planner-plugin",
+  "repository": "https://github.com/ridanit-ruma/schematic-planner-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "planning",
+    "brainstorming",
+    "schematic-planner",
+    "mcp",
+    "canvas",
+    "skills"
+  ]
+}

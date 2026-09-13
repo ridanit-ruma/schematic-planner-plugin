@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# SessionStart hook for the schematic-planner plugin.
+#
+# Injects the entry skill in full rather than a pointer to it. The whole value of
+# this plugin is that the approval gate does not get skipped, and a one-line
+# pointer the model may or may not follow does not hold a gate.
+#
+# The platform-detection arrangement below is adapted from the superpowers
+# plugin (MIT, Jesse Vincent), which worked out which field each harness reads.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+entry_skill=$(cat "${PLUGIN_ROOT}/skills/using-schematic-planner/SKILL.md" 2>&1 \
+    || echo "Error reading using-schematic-planner skill")
+
+# Escape for JSON embedding. Each substitution is one C-level pass.
+escape_for_json() {
+    local s="$1"
+    s="${s//\\/\\\\}"
+    s="${s//\"/\\\"}"
+    s="${s//$'\n'/\\n}"
+    s="${s//$'\r'/\\r}"
+    s="${s//$'\t'/\\t}"
+    printf '%s' "$s"
+}
+
+entry_escaped=$(escape_for_json "$entry_skill")
+session_context="<EXTREMELY_IMPORTANT>\nPlans in this project live on a Schematic Planner canvas, not in Markdown files.\n\n**Below is the full content of your 'schematic-planner:using-schematic-planner' skill. For the other three skills, use the 'Skill' tool.**\n\n${entry_escaped}\n</EXTREMELY_IMPORTANT>"
+
+# Each harness reads a different field, and Claude Code reads two of them without
+# deduplicating, so emit exactly one.
+if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
+    printf '{\n  "additional_context": "%s"\n}\n' "$session_context" | cat
+elif [ -n "${CLAUDE_PLUGIN_ROOT:-}" ] && [ -z "${COPILOT_CLI:-}" ]; then
+    printf '{\n  "hookSpecificOutput": {\n    "hookEventName": "SessionStart",\n    "additionalContext": "%s"\n  }\n}\n' "$session_context" | cat
+else
+    printf '{\n  "additionalContext": "%s"\n}\n' "$session_context" | cat
+fi
+
+exit 0

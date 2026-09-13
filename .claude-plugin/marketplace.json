@@ -1,0 +1,20 @@
+{
+  "name": "schematic-planner-dev",
+  "description": "Development marketplace for the Schematic Planner planning skills",
+  "owner": {
+    "name": "ruma",
+    "email": "minenaturecrew@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "schematic-planner",
+      "description": "Plan on a Schematic Planner canvas instead of in Markdown: four skills that keep the design and the implementation plan in one graph both you and the agent are looking at.",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "ruma",
+        "email": "minenaturecrew@gmail.com"
+      }
+    }
+  ]
+}

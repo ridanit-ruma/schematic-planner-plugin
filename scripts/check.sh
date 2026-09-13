@@ -57,6 +57,82 @@ else
 fi
 
 echo
+echo "-- Task 2: the package"
+
+need_file .claude-plugin/plugin.json
+need_text .claude-plugin/plugin.json '"name": "schematic-planner"' "plugin.json names the plugin"
+# skills/ is discovered automatically. None of the plugins shipped with Claude
+# Code declares a skills path, and inventing one is at best ignored.
+if [ -f .claude-plugin/plugin.json ] && grep -Eq '"skills"[[:space:]]*:' .claude-plugin/plugin.json; then
+    err "plugin.json must not declare a skills path; skills/ is discovered"
+else
+    ok "plugin.json declares no skills path"
+fi
+
+need_file .claude-plugin/marketplace.json
+need_text .claude-plugin/marketplace.json '"name": "schematic-planner"' "marketplace lists the plugin"
+need_text .claude-plugin/marketplace.json '"source": "\./"' "marketplace sources the plugin from this repository"
+
+need_file .mcp.json
+need_text .mcp.json '"mcpServers"' "mcp.json uses the wrapped form"
+need_text .mcp.json '"schematic-planner"' "mcp.json names the server"
+need_text .mcp.json 'SCHEMATIC_PLANNER_KEY' "mcp.json takes its key from the environment"
+
+need_file hooks/hooks.json
+need_text hooks/hooks.json 'SessionStart' "hook runs at session start"
+need_text hooks/hooks.json 'CLAUDE_PLUGIN_ROOT' "hook resolves its own plugin root"
+need_file hooks/session-start
+need_text hooks/session-start 'using-schematic-planner' "hook injects the entry skill"
+need_file hooks/run-hook.cmd
+
+need_file .codex-plugin/plugin.json
+need_file .kimi-plugin/plugin.json
+need_file .cursor-plugin/plugin.json
+need_file .opencode/plugins/schematic-planner.js
+need_file .agents/plugins/marketplace.json
+need_file scripts/sync-harnesses.sh
+
+# A .cursor/ directory applies when Cursor opens this repository. It is not
+# distributed with the plugin, so it is not how Cursor gets these skills.
+if [ -d .cursor ]; then
+    err ".cursor/ is not distributed with a plugin; use .cursor-plugin/"
+else
+    ok "Cursor is served by .cursor-plugin/, not .cursor/"
+fi
+
+for f in scripts/check.sh scripts/sync-harnesses.sh hooks/session-start; do
+    if [ -x "$f" ]; then
+        ok "executable: $f"
+    else
+        err "not executable: $f"
+    fi
+done
+
+echo
+echo "-- no credentials anywhere"
+
+# A key in a published file is the one mistake with no undo, so only the files
+# that actually ship are scanned. After "Bearer" there may be a variable or an
+# angle-bracket placeholder, and nothing else.
+shipped=".claude-plugin .mcp.json hooks .codex-plugin .cursor-plugin .kimi-plugin .opencode .agents skills references README.md"
+present=""
+for p in $shipped; do
+    [ -e "$p" ] && present="$present $p"
+done
+if [ -n "$present" ]; then
+    # shellcheck disable=SC2086
+    leaked=$(grep -REn "Bearer [^\$<]" $present 2>/dev/null || true)
+    if [ -n "$leaked" ]; then
+        err "a literal credential may be about to ship"
+        printf "%s\n" "$leaked" >&2
+    else
+        ok "no literal credentials in shipped files"
+    fi
+else
+    ok "nothing shipped to scan yet"
+fi
+
+echo
 if [ "$fail" -eq 0 ]; then
     echo "all checks passed"
 else
