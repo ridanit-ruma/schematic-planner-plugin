@@ -44,9 +44,12 @@ need_text references/mcp-surface.md 'via' 'mcp-surface warns about via on delete
 need_text references/mcp-surface.md 'position' 'mcp-surface says agents set no coordinates'
 
 need_file references/binding-file.md
-for key in server workspace project plan; do
+for key in server workspace project; do
     need_text references/binding-file.md "\"$key\"" "binding-file documents \"$key\""
 done
+need_text references/binding-file.md '`plan`' 'binding-file documents the legacy plan field'
+need_text references/binding-file.md '[Pp]roject-scoped' 'binding-file makes the project the binding boundary'
+need_text references/binding-file.md '[Oo]ptional legacy.*migration hint' 'binding-file treats plan as an optional migration hint'
 
 # A binding may legitimately appear here once this repository is planned with
 # its own plugin. A placeholder with nothing bound may not: it documents nothing
