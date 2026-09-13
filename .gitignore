@@ -1,3 +1,7 @@
 node_modules/
 .DS_Store
 *.log
+docs/
+CLAUDE.md
+AGENTS.md
+.schematic-planner.local.json
