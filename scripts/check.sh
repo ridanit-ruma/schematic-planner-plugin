@@ -1,88 +1,170 @@
 #!/bin/sh
-set -eu
+# Structural checks for the schematic-planner plugin.
+#
+# The plugin is Markdown and manifests, so there is nothing to unit test. What
+# can go wrong is structural: a manifest that names the plugin something else, a
+# reference that stops documenting a tool the skills call, a credential pasted
+# into a file that gets published. These checks cover that, with nothing but a
+# POSIX shell and grep.
 
-require_file() {
-  test -f "$1" || {
-    echo "missing required file: $1" >&2
-    exit 1
-  }
+set -u
+
+fail=0
+
+err() { printf 'FAIL  %s\n' "$1" >&2; fail=1; }
+ok()  { printf 'ok    %s\n' "$1"; }
+
+need_file() {
+    if [ -f "$1" ]; then
+        ok "$1"
+    else
+        err "missing file: $1"
+    fi
 }
 
-require_file .schematic-planner.json
-require_file references/mcp-surface.md
-require_file .claude-plugin/plugin.json
-require_file .codex-plugin/plugin.json
-require_file .kimi-plugin/plugin.json
-require_file .cursor/mcp.json.example
-require_file .cursor/commands/using-schematic-planner.md
-require_file .cursor/commands/brainstorming-on-canvas.md
-require_file .cursor/commands/writing-plans-on-canvas.md
-require_file .cursor/commands/executing-plans-on-canvas.md
-require_file .opencode/plugins/schematic-planner.js
-require_file .agents/plugins/marketplace.json
-require_file hooks/hooks.json
-require_file hooks/session-start
-require_file skills/using-schematic-planner/SKILL.md
-require_file skills/brainstorming-on-canvas/SKILL.md
-require_file skills/writing-plans-on-canvas/SKILL.md
-require_file skills/executing-plans-on-canvas/SKILL.md
-require_file README.md
-require_file LICENSE
-require_file scripts/sync-harnesses.sh
-require_file .github/workflows/check.yml
+# need_text <file> <extended-regex> <what it is for>
+need_text() {
+    if [ ! -f "$1" ]; then
+        err "$3 — $1 does not exist"
+    elif grep -Eq "$2" "$1"; then
+        ok "$3"
+    else
+        err "$3 — $1 does not match /$2/"
+    fi
+}
 
-grep -q '"server"' .schematic-planner.json
-grep -q 'apply_ops' references/mcp-surface.md
-grep -q 'Apache-2.0' .claude-plugin/plugin.json
-grep -q 'Apache-2.0' .codex-plugin/plugin.json
-grep -q 'Apache-2.0' .kimi-plugin/plugin.json
-grep -q 'schematic-planner' .cursor/commands/using-schematic-planner.md
-grep -q 'using-schematic-planner' skills/using-schematic-planner/SKILL.md
-grep -q 'brainstorming-on-canvas' skills/brainstorming-on-canvas/SKILL.md
-grep -q 'writing-plans-on-canvas' skills/writing-plans-on-canvas/SKILL.md
-grep -q 'executing-plans-on-canvas' skills/executing-plans-on-canvas/SKILL.md
-grep -q 'Apache License' LICENSE
-grep -q 'q-' README.md
-grep -q 'gate-' README.md
-grep -q '"type": "http"' .cursor/mcp.json.example
+echo "-- the contract"
 
-for skill in skills/*/SKILL.md; do
-  grep -q '^---$' "$skill"
-  grep -q '^name: ' "$skill"
-  grep -q '^description: .*Use ' "$skill"
+need_file references/mcp-surface.md
+for tool in get_plan apply_ops create_plan list_plans layout export_plan; do
+    need_text references/mcp-surface.md "$tool" "mcp-surface documents $tool"
+done
+need_text references/mcp-surface.md '[Aa]tomic' 'mcp-surface says apply_ops is atomic'
+need_text references/mcp-surface.md 'via' 'mcp-surface warns about via on delete_edge'
+need_text references/mcp-surface.md 'position' 'mcp-surface says agents set no coordinates'
+
+need_file references/binding-file.md
+for key in server workspace project plan; do
+    need_text references/binding-file.md "\"$key\"" "binding-file documents \"$key\""
 done
 
-! rg -n 'Authorization: Bearer (?!\$\{SCHEMATIC_PLANNER_KEY\}|<key>)' \
-  --pcre2 --glob '!references/mcp-surface.md' --glob '!scripts/check.sh' .
+# A binding may legitimately appear here once this repository is planned with
+# its own plugin. A placeholder with nothing bound may not: it documents nothing
+# that references/binding-file.md does not, and reads as a broken link.
+if [ -f .schematic-planner.json ] && grep -Eq '"plan"[[:space:]]*:[[:space:]]*""' .schematic-planner.json; then
+    err ".schematic-planner.json is here but binds no plan; the schema lives in references/binding-file.md"
+elif [ -f .schematic-planner.json ]; then
+    ok "binding file names a plan"
+else
+    ok "no binding file, and none needed yet"
+fi
 
-sh scripts/sync-harnesses.sh
-node --input-type=module <<'NODE'
-import { readFileSync } from 'node:fs'
+echo
+echo "-- the package"
 
-for (const path of [
-  '.schematic-planner.json',
-  '.claude-plugin/plugin.json',
-  '.codex-plugin/plugin.json',
-  '.kimi-plugin/plugin.json',
-  '.cursor/mcp.json.example',
-  '.agents/plugins/marketplace.json',
-  'hooks/hooks.json',
-]) {
-  JSON.parse(readFileSync(path, 'utf8'))
-}
+need_file .claude-plugin/plugin.json
+need_text .claude-plugin/plugin.json '"name": "schematic-planner"' "plugin.json names the plugin"
+# skills/ is discovered automatically. None of the plugins shipped with Claude
+# Code declares a skills path, and inventing one is at best ignored.
+if [ -f .claude-plugin/plugin.json ] && grep -Eq '"skills"[[:space:]]*:' .claude-plugin/plugin.json; then
+    err "plugin.json must not declare a skills path; skills/ is discovered"
+else
+    ok "plugin.json declares no skills path"
+fi
 
-const marketplace = JSON.parse(readFileSync('.agents/plugins/marketplace.json', 'utf8'))
-const entry = marketplace.plugins?.[0]
-if (
-  marketplace.name !== 'schematic-planner' ||
-  entry?.name !== 'schematic-planner' ||
-  entry?.source?.source !== 'local' ||
-  entry?.source?.path !== '.' ||
-  entry?.policy?.installation !== 'AVAILABLE' ||
-  entry?.policy?.authentication !== 'ON_INSTALL' ||
-  entry?.category !== 'Productivity'
-) {
-  throw new Error('.agents/plugins/marketplace.json does not match the Codex marketplace schema')
-}
-NODE
-node --input-type=module --eval "import('./.opencode/plugins/schematic-planner.js').then(({ SchematicPlanner }) => SchematicPlanner({}).then((hooks) => { if (typeof hooks !== 'object') process.exit(1) }))"
+need_file .claude-plugin/marketplace.json
+need_text .claude-plugin/marketplace.json '"name": "schematic-planner"' "marketplace lists the plugin"
+need_text .claude-plugin/marketplace.json '"source": "\./"' "marketplace sources the plugin from this repository"
+
+need_file .mcp.json
+need_text .mcp.json '"mcpServers"' "mcp.json uses the wrapped form"
+need_text .mcp.json '"schematic-planner"' "mcp.json names the server"
+need_text .mcp.json 'SCHEMATIC_PLANNER_KEY' "mcp.json takes its key from the environment"
+
+need_file hooks/hooks.json
+need_text hooks/hooks.json 'SessionStart' "hook runs at session start"
+need_text hooks/hooks.json 'CLAUDE_PLUGIN_ROOT' "hook resolves its own plugin root"
+need_file hooks/session-start
+need_text hooks/session-start 'using-schematic-planner' "hook injects the entry skill"
+need_file hooks/run-hook.cmd
+
+need_file .codex-plugin/plugin.json
+need_file .kimi-plugin/plugin.json
+need_file .cursor-plugin/plugin.json
+need_file .opencode/plugins/schematic-planner.js
+need_file .agents/plugins/marketplace.json
+need_file scripts/sync-harnesses.sh
+
+# A .cursor/ directory applies when Cursor opens this repository. It is not
+# distributed with the plugin, so it is not how Cursor gets these skills.
+if [ -d .cursor ]; then
+    err ".cursor/ is not distributed with a plugin; use .cursor-plugin/"
+else
+    ok "Cursor is served by .cursor-plugin/, not .cursor/"
+fi
+
+for f in scripts/check.sh scripts/sync-harnesses.sh hooks/session-start; do
+    if [ -x "$f" ]; then
+        ok "executable: $f"
+    else
+        err "not executable: $f"
+    fi
+done
+
+echo
+echo "-- the skills"
+
+for s in using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas executing-plans-on-canvas; do
+    need_file "skills/$s/SKILL.md"
+    need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
+    need_text "skills/$s/SKILL.md" '^description: .*[Uu]se ' "$s says when to use it"
+done
+
+# A skill with no frontmatter is invisible to every harness that loads this.
+for skill in skills/*/SKILL.md; do
+    [ -e "$skill" ] || continue
+    if head -1 "$skill" | grep -q '^---$'; then
+        ok "frontmatter opens: $skill"
+    else
+        err "no frontmatter: $skill"
+    fi
+done
+
+echo
+echo "-- the setup references"
+
+for h in claude-code codex cursor; do
+    need_file "references/mcp-setup-$h.md"
+done
+
+echo
+echo "-- no credentials anywhere"
+
+# A key in a published file is the one mistake with no undo, so only the files
+# that actually ship are scanned. After "Bearer" there may be a variable or an
+# angle-bracket placeholder, and nothing else.
+shipped=".claude-plugin .mcp.json hooks .codex-plugin .cursor-plugin .kimi-plugin .opencode .agents skills references README.md"
+present=""
+for p in $shipped; do
+    [ -e "$p" ] && present="$present $p"
+done
+if [ -n "$present" ]; then
+    # shellcheck disable=SC2086
+    leaked=$(grep -REn "Bearer [^\$<]" $present 2>/dev/null || true)
+    if [ -n "$leaked" ]; then
+        err "a literal credential may be about to ship"
+        printf "%s\n" "$leaked" >&2
+    else
+        ok "no literal credentials in shipped files"
+    fi
+else
+    ok "nothing shipped to scan yet"
+fi
+
+echo
+if [ "$fail" -eq 0 ]; then
+    echo "all checks passed"
+else
+    echo "checks failed"
+fi
+exit "$fail"

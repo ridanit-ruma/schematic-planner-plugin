@@ -1,16 +1,35 @@
 {
   "name": "schematic-planner",
   "version": "0.1.0",
-  "description": "Plan software work on a Schematic Planner canvas.",
-  "author": "ridanit-ruma",
-  "homepage": "https://github.com/ridanit-ruma/schematic-planner-plugin",
-  "license": "Apache-2.0",
-  "skills": "./skills/",
-  "sessionStart": {
-    "skill": "using-schematic-planner"
+  "description": "Plan on a Schematic Planner canvas instead of in Markdown: four skills that keep the design and the implementation plan in one graph both you and the agent are looking at.",
+  "author": {
+    "name": "ruma",
+    "email": "minenaturecrew@gmail.com"
   },
+  "homepage": "https://github.com/ridanit-ruma/schematic-planner-plugin",
+  "repository": "https://github.com/ridanit-ruma/schematic-planner-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "planning",
+    "brainstorming",
+    "schematic-planner",
+    "mcp",
+    "canvas",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "hooks": {},
   "interface": {
     "displayName": "Schematic Planner",
-    "shortDescription": "Plan on a shared canvas."
+    "shortDescription": "Plan in a graph you can point at, not a Markdown file nobody re-reads",
+    "longDescription": "Design and implementation plans live on a Schematic Planner canvas. The agent declares structure through MCP, leaves its open questions as comments on the drawing, and does not start building until you have answered them.",
+    "developerName": "ruma",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://schematic-planner.com"
   }
 }
