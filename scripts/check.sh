@@ -109,6 +109,18 @@ for f in scripts/check.sh scripts/sync-harnesses.sh hooks/session-start; do
 done
 
 echo
+echo "-- Task 3: the entry point"
+
+need_file skills/using-schematic-planner/SKILL.md
+need_text skills/using-schematic-planner/SKILL.md '^name: using-schematic-planner$' "entry skill declares its name"
+need_text skills/using-schematic-planner/SKILL.md '^description: .*[Uu]se when' "entry skill description says when to use it"
+need_text skills/using-schematic-planner/SKILL.md 'schematic-planner\.json' "entry skill reads the binding file"
+
+for h in claude-code codex cursor; do
+    need_file "references/mcp-setup-$h.md"
+done
+
+echo
 echo "-- no credentials anywhere"
 
 # A key in a published file is the one mistake with no undo, so only the files
