@@ -1,20 +1,47 @@
 ---
 name: writing-plans-on-canvas
-description: Use after design approval to turn a Schematic Planner design graph into reviewable implementation tasks.
+description: Use after Spec approval to create or update a separate executable implementation Plan in the bound project's plans folder.
 ---
 
-# Writing Plans on Canvas
+# Writing an implementation Plan
 
-Read the bound plan with `get_plan(plan, { view: "outline" })`. Do not advance while unresolved `q-` or `gate-` comments exist. Read the `constraints` note before each task write.
+Start with the selected approved Spec id or ids from `specs`. Read each with
+`get_plan(..., { view: "outline" })`; unresolved `q-` or `gate-` comments stop
+the work. Read every source Spec's `constraints` note before planning.
 
-For each approved feature, upsert `task` nodes and attach them with `contains` edges. Use `depends_on` only for actual prerequisites. Every task body is Markdown and must include all of the following concrete information:
+Run `list_plans` for the bound project. Reuse a Plan in `plans` only when its
+scope matches and its description's first line names the same provenance:
+
+```text
+Source-Specs: <plan-id>[, <plan-id>...]
+```
+
+Otherwise call `create_plan` with the bound workspace and project,
+`folder: "plans"`, a scope-specific title, and that `Source-Specs` line at the
+start of its description. One cohesive Spec may produce several Plans when
+delivery slices have independent release order or prerequisites. Do not split
+merely because there are many tasks.
+
+Never add executable task nodes to a Spec. Never persist an active Plan pointer
+or rewrite `.schematic-planner.json`. If several existing Plans are equally
+plausible, stop for human selection before changing any of them.
+
+Read the selected implementation Plan before writing. Represent only enough
+`feature` nodes to group its delivery slices; the source Spec remains the design
+authority. For every task, upsert a `task` node under its feature with a
+`contains` edge. Use `depends_on` only for actual prerequisites. Each task body
+must name:
 
 1. Files to create, modify, and test.
-2. Inputs, outputs, and named interfaces expected by dependent tasks.
+2. Inputs, outputs, and interfaces required by dependent tasks.
 3. A failing test command and its expected failure.
-4. The smallest implementation step that makes that test pass.
-5. A passing test command and a commit command.
+4. The smallest implementation that makes it pass.
+5. Passing verification and a commit command.
 
-Set a task to `planned` only after its body is complete. Keep bodies below the MCP limit. Upsert `gate-plan` after all task nodes and dependency edges are ready.
+Set a task to `planned` only when its body is complete. After all tasks and
+dependencies are ready, upsert `gate-plan` on the implementation Plan, run
+`layout`, then read its outline again. Report its URL and every unresolved
+`q-`/`gate-` comment and stop without polling.
 
-Call outline view again. If `q-` or `gate-` comments remain unresolved, report the canvas URL and stop. When Superpowers is installed, execution may invoke `superpowers:test-driven-development`; otherwise the executor follows the test-first steps in the task body.
+When Superpowers is installed, execution may use its test-driven development
+skills. Otherwise the task body is the execution contract.

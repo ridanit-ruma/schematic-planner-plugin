@@ -140,6 +140,16 @@ need_text skills/using-schematic-planner/SKILL.md '[Aa]mbigu' 'entry skill stops
 need_text skills/brainstorming-on-canvas/SKILL.md 'folder.*specs' 'brainstorming files new specs in the specs folder'
 need_text skills/brainstorming-on-canvas/SKILL.md '[Rr]euse' 'brainstorming reuses a matching spec before creation'
 
+for term in list_plans create_plan plans Source-Specs; do
+    need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning skill creates folder-qualified plans with $term"
+done
+need_text skills/writing-plans-on-canvas/SKILL.md '[Nn]ever.*task.*Spec|do not.*task.*Spec' 'planning skill keeps executable tasks out of specs'
+for term in list_plans plans Source-Specs; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor discovers implementation plans with $term"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md 'persistent active Plan' 'executor keeps no persistent active plan pointer'
+need_text skills/executing-plans-on-canvas/SKILL.md 'exactly one' 'executor runs exactly one ready task'
+
 # A skill with no frontmatter is invisible to every harness that loads this.
 for skill in skills/*/SKILL.md; do
     [ -e "$skill" ] || continue
