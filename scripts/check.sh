@@ -36,9 +36,15 @@ need_text() {
 echo "-- the contract"
 
 need_file references/mcp-surface.md
-for tool in get_plan apply_ops create_plan list_plans layout export_plan; do
+for tool in \
+    get_plan apply_ops create_plan list_plans layout export_plan \
+    list_folders create_folder rename_folder delete_folder move_plan
+do
     need_text references/mcp-surface.md "$tool" "mcp-surface documents $tool"
 done
+need_text references/mcp-surface.md 'create_plan.*folder' 'mcp-surface documents create_plan folder placement'
+need_text references/mcp-surface.md '[Ff]olders do not nest' 'mcp-surface says folders do not nest'
+need_text references/mcp-surface.md 'addressed by name' 'mcp-surface explains name-based folder lookup'
 need_text references/mcp-surface.md '[Aa]tomic' 'mcp-surface says apply_ops is atomic'
 need_text references/mcp-surface.md 'via' 'mcp-surface warns about via on delete_edge'
 need_text references/mcp-surface.md 'position' 'mcp-surface says agents set no coordinates'

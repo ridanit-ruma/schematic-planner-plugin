@@ -4,18 +4,23 @@ Every skill in this plugin reads and writes plans through this surface and
 nothing else. There is no CLI, no HTTP client, no second MCP server. If a
 behaviour is not expressible here, it does not happen.
 
-Verified against `apps/api/src/mcp/` and `packages/schema/src/` on 2026-09-13.
+Verified against `apps/api/src/mcp/` and `packages/schema/src/` on 2026-09-14.
 The product README's tool table is slightly behind the code; this file is not.
 
-## The eleven tools
+## The sixteen tools
 
 | Tool | Use |
 | --- | --- |
 | `list_workspaces()` | Workspaces the key can act in |
 | `list_projects({ workspace? })` | Projects reachable by the key |
 | `create_project(...)` | Open a project |
-| `list_plans({ workspace? })` | Plans, grouped by workspace and project |
-| `create_plan({ title, workspace?, projectSlug?, description? })` | Open an empty plan. It arrives with no nodes on purpose |
+| `list_plans({ workspace? })` | Plans, grouped by workspace, project and folder |
+| `list_folders({ workspace?, projectSlug? })` | Non-nesting folders in one project, with plan counts |
+| `create_folder({ name, workspace?, projectSlug? })` | Ensure a folder exists |
+| `rename_folder({ folder, to, workspace?, projectSlug? })` | Rename a folder |
+| `delete_folder({ folder, confirmName, workspace?, projectSlug? })` | Move a folder and its plans to trash |
+| `create_plan({ title, workspace?, projectSlug?, folder?, description? })` | Open an empty plan, optionally filed in a folder |
+| `move_plan({ planId, workspace?, projectSlug?, folder? })` | File a plan in a folder, at project top level, or in another project |
 | `delete_plan(id)` | Remove a plan |
 | `get_plan(id, { view })` | Read. `view` is `outline`, `graph` or `markdown` |
 | `trace(id, { from, direction?, depth? })` | Walk `flows_to` edges out of a node, a title or a tag |
@@ -52,6 +57,40 @@ characters, so read the full text only when something is actually waiting.
 `view: 'markdown'` returns the whole export with placement stripped. It is large.
 Use it when handing a plan to someone who will read it as prose, not to find one
 node.
+
+`list_plans` renders each project's folders and the plans filed under them. It
+also shows empty folders, because an agent that cannot see an empty `specs`
+drawer will create a duplicate or pile work at the project top level.
+
+## Folders and filing
+
+Folders do not nest. They are addressed by name within a project rather than by
+an opaque id:
+
+```text
+list_folders({ workspace?, projectSlug? })
+create_folder({ name, workspace?, projectSlug? })
+rename_folder({ folder, to, workspace?, projectSlug? })
+delete_folder({ folder, confirmName, workspace?, projectSlug? })
+```
+
+`create_folder` is idempotent and case-insensitive: asking for `specs` when
+`Specs` already exists returns the existing folder. Historical duplicate names
+are ambiguous, so the agent stops rather than guessing. `delete_folder` requires
+the exact current name and moves both the folder and its plans to recoverable
+trash.
+
+Plans can be filed at creation or moved later:
+
+```text
+create_plan({ title, workspace?, projectSlug?, folder?, description? })
+move_plan({ planId, workspace?, projectSlug?, folder? })
+```
+
+Omitting `folder` from `create_plan` leaves the new plan at project top level.
+For `move_plan`, a folder name files it there, while `folder: null` takes it to
+project top level. Naming no destination project keeps the current project.
+Cross-workspace moves drop existing share links because their audience changes.
 
 ## Writing
 
@@ -145,8 +184,8 @@ every comment an agent leaves renders as "Someone". Comment ids carry the
 distinction instead — see the gate conventions in the skills: `q-` for a
 question, `gate-` for a stage approval, `blocked-` for a stuck task.
 
-**There are no folders here.** A workspace holds projects, a project holds
-folders and plans, but no tool creates a folder, chooses one, or groups by one.
-Plans an agent creates land at the project's top level; a human files them from
-the rail beside the canvas. Moving a plan between folders does not change its
-id, so nothing an agent stored ever breaks.
+**Folder names are scoped to a project.** Folder tools accept the name shown by
+`list_folders`; they do not expose ids and folders do not nest. A missing name
+is an error, and duplicate historical names are deliberately ambiguous. Use
+`create_folder` to ensure a conventional folder exists and `move_plan` to file
+an existing plan without changing its id.
