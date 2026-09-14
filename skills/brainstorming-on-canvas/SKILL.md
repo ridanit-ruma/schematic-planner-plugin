@@ -1,20 +1,42 @@
 ---
 name: brainstorming-on-canvas
-description: Use after the Schematic Planner binding is ready to design a requested change on the shared canvas before implementation.
+description: Use after project discovery to select or create a specification canvas in specs and design a requested change before implementation planning.
 ---
 
-# Brainstorming on Canvas
+# Brainstorming on a Spec canvas
 
-Read `.schematic-planner.json`, `references/mcp-surface.md`, and `get_plan(plan, { view: "outline" })` first. The outline and unresolved comments are authoritative; never recreate a node a human deleted.
+Read `.schematic-planner.json`, `references/mcp-surface.md`, and the bound
+project's folder-qualified `list_plans` result first. The repository binding is
+project-scoped and never changes merely because this skill selects a Spec.
 
-Classify the request before asking detailed questions and announce the result:
+Classify the request and announce the result:
 
-- **Spike:** a feasibility question whose deliverable is an answer. Do not open or alter a plan.
-- **Bounded:** a scoped change in an existing flow. Add its design to the bound plan.
-- **Architectural:** a new subsystem, project, or restructuring. Create a plan and update the binding before drawing.
+- **Spike:** a feasibility question whose deliverable is an answer. Do not open
+  or alter a Plan.
+- **Bounded:** a scoped change to an existing flow. Reuse the one matching Spec
+  from `specs`, or create a cohesive Spec there when none covers it.
+- **Architectural:** a new subsystem or restructuring. Reuse an existing
+  in-progress Spec only when it clearly owns the same design; otherwise create a
+  separate Spec.
 
-The classification may only escalate during the work. For Bounded and Architectural work, batch `apply_ops` upserts for readable `feature`, `decision`, and `note` nodes. Use one `note` node with slug `constraints` for global rules. Join control or data movement with `flows_to` edges. Call `layout` after graph writes; never send coordinates or pinned values.
+For creation call `create_plan` with the bound workspace and project plus
+`folder: "specs"`. A Spec holds design only: features, decisions, notes,
+constraints, and `flows_to` edges. Test commands and implementation task bodies
+belong in a later Plan under `plans`.
 
-For each question that needs human input, upsert one idempotent comment named `q-<topic>` anchored to the affected node. It must include an A option marked recommended, a B option, and this instruction: “Resolve as-is to take A, or write your answer here and resolve.” Then upsert `gate-design` with a request to approve the graph.
+Before drawing, read the selected Spec with `get_plan(..., { view: "outline" })`.
+Its nodes and unresolved comments are authoritative. Never recreate a node or
+canvas a human deleted. If more than one Spec is an equally plausible match,
+return to the entry skill's ambiguity rule instead of guessing.
 
-Before any next stage, call outline view. If an unresolved comment ID starts with `q-` or `gate-`, print the canvas URL and each waiting comment, then end the turn. Read unresolved human comments too: answer and resolve only those that do not need a new human decision. Never poll for an answer.
+Batch readable `feature`, `decision`, and `note` upserts. Keep global rules in
+one `constraints` note. Draw control and data movement with `flows_to` edges,
+then call `layout` without coordinates.
+
+For each human decision, upsert `q-<topic>` on the affected node with an A
+option marked recommended, a B option, and: “Resolve as-is to take A, or write
+your answer here and resolve.” When the design is ready, upsert `gate-design`.
+
+Read the outline again. If any `q-` or `gate-` comment is unresolved, report the
+Spec URL and every waiting comment, then stop without polling. An approved Spec
+is input to `writing-plans-on-canvas`; do not add executable tasks to it.

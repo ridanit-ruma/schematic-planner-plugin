@@ -1,15 +1,15 @@
 # `.schematic-planner.json`
 
-The one file that ties a repository to the plan it is being built from. It lives
+The one file that ties a repository to its Schematic Planner project. It lives
 at the root of the **consuming** repository — the codebase being planned — and
-never in this plugin.
+never in this plugin. The binding is project-scoped: individual specification
+and implementation plans are discovered inside that project.
 
 ```json
 {
   "server": "https://schematic-planner.com",
   "workspace": "acme",
-  "project": "billing",
-  "plan": "018f3c2a-…"
+  "project": "billing"
 }
 ```
 
@@ -20,32 +20,37 @@ never in this plugin.
 | `server` | Where the canvas lives. The default is `https://schematic-planner.com`; a self-hosted instance names its own address |
 | `workspace` | Workspace slug, as `list_workspaces` reports it |
 | `project` | Project slug, as `list_projects` reports it |
-| `plan` | The plan being worked on now, by id |
+| `plan` | Optional legacy field. It is only a migration hint for finding prior work, never the repository's permanent working pointer |
 
-`server` exists for one reason: no MCP tool returns a plan's web address, and a
-human needs a link to click. The terminal assembles `{server}/plan/{plan}`.
+`server` exists so the terminal can assemble links for plans discovered or
+created during the current workflow: `{server}/plan/{plan}`.
 
 ## Why there is no folder field
 
-The MCP surface has no folders — nothing creates one, chooses one, or lists by
-one. A plan an agent opens lands at the project's top level and a human files it
-from the rail. Because filing does not change the plan's id, nothing recorded
-here breaks when they do.
+Folders belong to the bound project, not to the repository identity. The entry
+skill discovers or creates the conventional `specs` and `plans` folders through
+the MCP surface, then routes each request to a plan inside them. Moving a plan
+within the project therefore does not rewrite the binding.
 
 ## Lifecycle
 
 **Written** by the entry-point skill, never by hand and never by any other
-skill. It is created the first time a repository is bound to a plan: the skill
-asks whether to adopt an existing plan or open a new one, and writes what it
-learns.
+skill. It is created the first time a repository is bound: the skill asks which
+existing project to use or whether to open a new one, then writes the project
+identity it learns.
 
-**Changed** when architectural work opens a new plan — `create_plan` returns a
-new id and `plan` is replaced. Bounded work reuses whatever `plan` already
-names; a small change to an existing flow does not deserve a new canvas.
+**Stable across plans.** Opening, selecting, or splitting a specification or
+implementation plan does not rewrite the binding. It changes only when the
+repository moves to another workspace, project, or server.
 
-**Committed.** Different branches point at different plans, which is exactly the
-statement "this branch follows that plan". The churn is one line per feature,
-and it is a line worth reading in a diff.
+**Migrated** when an older binding contains `plan`. The optional legacy plan is
+a migration hint: inspect it when it still exists, use it to preserve prior
+context, and continue with project-level discovery. Do not keep replacing it as
+work moves between canvases.
+
+**Committed.** Branches for the same codebase normally keep the same project
+binding. Individual spec and implementation plan selection remains on the
+canvas instead of producing one binding-file change per feature.
 
 **Read** at the start of every session by the entry-point skill, before anything
 else happens.
@@ -58,12 +63,11 @@ variable, or a user-scope MCP entry — and this plugin neither reads nor writes
 it. A repository file is the wrong place for a secret, and this one is meant to
 be committed.
 
-## When it is missing or stale
+## When it is missing or legacy
 
-**Missing** — the entry-point skill asks whether to adopt an existing plan
-(`list_plans`) or open a new one (`create_plan`), then writes the file.
+**Missing** — the entry-point skill lists reachable workspaces and projects,
+asks which project to adopt or whether to create one, then writes the file.
 
-**Pointing at a plan that is gone** — deleted, or in the trash, which reads as
-missing to everything but the trash itself. `get_plan` fails; the skill runs
-`list_plans` and asks again rather than silently opening a replacement. A plan
-somebody threw away is not one to recreate without being asked.
+**Containing `plan`** — treat that id as prior context only. If it is gone or in
+the trash, ignore the hint and discover the project's remaining plans. Never
+silently recreate a plan somebody deleted.

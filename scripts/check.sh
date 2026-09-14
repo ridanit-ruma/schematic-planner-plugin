@@ -36,25 +36,38 @@ need_text() {
 echo "-- the contract"
 
 need_file references/mcp-surface.md
-for tool in get_plan apply_ops create_plan list_plans layout export_plan; do
+for tool in \
+    get_plan apply_ops create_plan list_plans layout export_plan \
+    list_folders create_folder rename_folder delete_folder move_plan
+do
     need_text references/mcp-surface.md "$tool" "mcp-surface documents $tool"
 done
+need_text references/mcp-surface.md 'create_plan.*folder' 'mcp-surface documents create_plan folder placement'
+need_text references/mcp-surface.md '[Ff]olders do not nest' 'mcp-surface says folders do not nest'
+need_text references/mcp-surface.md 'addressed by name' 'mcp-surface explains name-based folder lookup'
 need_text references/mcp-surface.md '[Aa]tomic' 'mcp-surface says apply_ops is atomic'
 need_text references/mcp-surface.md 'via' 'mcp-surface warns about via on delete_edge'
 need_text references/mcp-surface.md 'position' 'mcp-surface says agents set no coordinates'
 
 need_file references/binding-file.md
-for key in server workspace project plan; do
+for key in server workspace project; do
     need_text references/binding-file.md "\"$key\"" "binding-file documents \"$key\""
 done
+need_text references/binding-file.md '`plan`' 'binding-file documents the legacy plan field'
+need_text references/binding-file.md '[Pp]roject-scoped' 'binding-file makes the project the binding boundary'
+need_text references/binding-file.md '[Oo]ptional legacy.*migration hint' 'binding-file treats plan as an optional migration hint'
 
-# A binding may legitimately appear here once this repository is planned with
-# its own plugin. A placeholder with nothing bound may not: it documents nothing
-# that references/binding-file.md does not, and reads as a broken link.
-if [ -f .schematic-planner.json ] && grep -Eq '"plan"[[:space:]]*:[[:space:]]*""' .schematic-planner.json; then
-    err ".schematic-planner.json is here but binds no plan; the schema lives in references/binding-file.md"
-elif [ -f .schematic-planner.json ]; then
-    ok "binding file names a plan"
+# This repository dogfoods the project-scoped binding. A legacy consumer may
+# still carry `plan` as migration input, but new bindings must not keep one.
+if [ -f .schematic-planner.json ]; then
+    for key in server workspace project; do
+        need_text .schematic-planner.json "\"$key\"" "binding file names $key"
+    done
+    if grep -Eq '"plan"[[:space:]]*:' .schematic-planner.json; then
+        err ".schematic-planner.json must bind the project, not one plan"
+    else
+        ok "binding file has no active plan pointer"
+    fi
 else
     ok "no binding file, and none needed yet"
 fi
@@ -64,6 +77,24 @@ echo "-- the package"
 
 need_file .claude-plugin/plugin.json
 need_text .claude-plugin/plugin.json '"name": "schematic-planner"' "plugin.json names the plugin"
+for term in project specs plans; do
+    need_text README.md "$term" "README explains project-scoped $term"
+    need_text .claude-plugin/plugin.json "$term" "plugin.json describes project-scoped $term"
+done
+for f in \
+    README.md \
+    .claude-plugin/plugin.json \
+    .claude-plugin/marketplace.json \
+    .codex-plugin/plugin.json \
+    .kimi-plugin/plugin.json \
+    .cursor-plugin/plugin.json
+do
+    if grep -Eqi 'one graph' "$f"; then
+        err "$f must not describe design and implementation as one graph"
+    else
+        ok "$f keeps Specs and Plans separate"
+    fi
+done
 # skills/ is discovered automatically. None of the plugins shipped with Claude
 # Code declares a skills path, and inventing one is at best ignored.
 if [ -f .claude-plugin/plugin.json ] && grep -Eq '"skills"[[:space:]]*:' .claude-plugin/plugin.json; then
@@ -119,6 +150,23 @@ for s in using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
     need_text "skills/$s/SKILL.md" '^description: .*[Uu]se ' "$s says when to use it"
 done
+
+for term in list_folders create_folder list_plans specs plans legacy; do
+    need_text skills/using-schematic-planner/SKILL.md "$term" "entry skill routes project inventory with $term"
+done
+need_text skills/using-schematic-planner/SKILL.md '[Aa]mbigu' 'entry skill stops on ambiguous canvas selection'
+need_text skills/brainstorming-on-canvas/SKILL.md 'folder.*specs' 'brainstorming files new specs in the specs folder'
+need_text skills/brainstorming-on-canvas/SKILL.md '[Rr]euse' 'brainstorming reuses a matching spec before creation'
+
+for term in list_plans create_plan plans Source-Specs; do
+    need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning skill creates folder-qualified plans with $term"
+done
+need_text skills/writing-plans-on-canvas/SKILL.md '[Nn]ever.*task.*Spec|do not.*task.*Spec' 'planning skill keeps executable tasks out of specs'
+for term in list_plans plans Source-Specs; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor discovers implementation plans with $term"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md 'persistent active Plan' 'executor keeps no persistent active plan pointer'
+need_text skills/executing-plans-on-canvas/SKILL.md 'exactly one' 'executor runs exactly one ready task'
 
 # A skill with no frontmatter is invisible to every harness that loads this.
 for skill in skills/*/SKILL.md; do

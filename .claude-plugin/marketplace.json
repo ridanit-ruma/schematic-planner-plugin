@@ -1,6 +1,6 @@
 {
   "name": "schematic-planner",
-  "description": "Planning skills that keep the design and the plan on a Schematic Planner canvas",
+  "description": "Planning skills for project-scoped design canvases in specs and executable task canvases in plans",
   "owner": {
     "name": "ruma",
     "email": "minenaturecrew@gmail.com"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "schematic-planner",
-      "description": "Plan on a Schematic Planner canvas instead of in Markdown: four skills that keep the design and the implementation plan in one graph both you and the agent are looking at.",
+      "description": "Plan software work in a Schematic Planner project: design canvases in specs, executable task canvases in plans, shared by you and the agent.",
       "version": "0.1.0",
       "source": "./",
       "author": {
