@@ -1,27 +1,30 @@
 # Schematic Planner Plugin
 
-Plan software work on a shared [Schematic Planner](https://schematic-planner.com)
-canvas instead of in a Markdown file nobody re-reads.
+Plan software work in a shared [Schematic Planner](https://schematic-planner.com)
+project instead of in Markdown files nobody re-reads.
 
-A plan in a file gets re-derived every session, because nothing holds it still.
-A plan in a graph holds still, and the person you are working with can watch it
-change while the agent changes it. The agent declares structure through the
-Schematic Planner MCP; its open questions become comments on the drawing; and it
-does not start building until those are answered.
+A project keeps design canvases in `specs` and executable task canvases in
+`plans`. Each folder can hold as many focused canvases as the work needs, and the
+person you are working with can watch them change while the agent changes them.
+The agent declares structure through the Schematic Planner MCP; its open
+questions become comments on the relevant drawing; and it does not start
+building until those are answered.
 
 ## What it provides
 
 | Skill | What it does |
 | --- | --- |
-| `using-schematic-planner` | Binds the repository to a plan, checks the connection, routes the work |
-| `brainstorming-on-canvas` | Draws the design and gates it |
-| `writing-plans-on-canvas` | Hangs test-first task nodes under it, in dependency order |
-| `executing-plans-on-canvas` | Takes one ready task and keeps its status honest |
+| `using-schematic-planner` | Binds the repository to a project, checks its folders, routes the work |
+| `brainstorming-on-canvas` | Creates or extends a design canvas in `specs` and gates it |
+| `writing-plans-on-canvas` | Creates a linked implementation canvas in `plans` with test-first tasks |
+| `executing-plans-on-canvas` | Finds one ready task in `plans` and keeps its status honest |
 
-The canvas is the authoritative record for both the design and the plan. Markdown
-in your repository is what `export_plan` produced, never a source. The plugin
-reaches the canvas through the Schematic Planner MCP and nothing else, and it
-never stores an API key in a repository.
+The project is the binding boundary. Its `specs` canvases are the authoritative
+design record; its `plans` canvases are the authoritative execution record and
+link back to their source with `Source-Specs`. Markdown in your repository is
+what `export_plan` produced, never a source. The plugin reaches the project
+through the Schematic Planner MCP and nothing else, and it never stores an API
+key in a repository.
 
 ## Install
 
@@ -42,7 +45,7 @@ codex plugin add schematic-planner@schematic-planner
 Kimi Code reads the same manifests. Cursor reads `.cursor-plugin/plugin.json`.
 OpenCode loads `.opencode/plugins/schematic-planner.js`.
 
-## Connect the canvas
+## Connect the project
 
 Get a key from your instance's agent settings — `/settings/agents`, or
 <https://schematic-planner.com/settings/agents> — which hands over the whole
@@ -64,15 +67,18 @@ The key belongs to the harness's configuration. It never goes in
 
 ## The workflow
 
-1. `schematic-planner:using-schematic-planner` binds the repository and reports
-   the canvas link.
-2. `brainstorming-on-canvas` draws the design and leaves `q-` comments where it
-   needs a decision, then `gate-design`.
-3. You answer on the canvas. Resolving a comment unchanged takes the agent's
-   recommendation.
-4. `writing-plans-on-canvas` turns the approved design into tasks, then
+1. `schematic-planner:using-schematic-planner` binds the repository to a project,
+   ensures the non-nesting `specs` and `plans` folders exist, and inventories
+   their canvases.
+2. `brainstorming-on-canvas` creates or reuses the matching canvas in `specs`,
+   leaves `q-` comments where it needs a decision, then adds `gate-design`.
+3. You answer on the Spec canvas. Resolving a comment unchanged takes the
+   agent's recommendation.
+4. `writing-plans-on-canvas` creates a separate canvas in `plans`, records its
+   `Source-Specs` provenance, turns the approved design into tasks, then adds
    `gate-plan`.
-5. `executing-plans-on-canvas` builds them, one at a time.
+5. `executing-plans-on-canvas` discovers the matching Plan and builds one ready
+   task at a time.
 
 The agent never polls for an answer: it leaves the question, reports it, and
 ends its turn. Retrying a write is safe, because every canvas operation is an

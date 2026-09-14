@@ -77,6 +77,24 @@ echo "-- the package"
 
 need_file .claude-plugin/plugin.json
 need_text .claude-plugin/plugin.json '"name": "schematic-planner"' "plugin.json names the plugin"
+for term in project specs plans; do
+    need_text README.md "$term" "README explains project-scoped $term"
+    need_text .claude-plugin/plugin.json "$term" "plugin.json describes project-scoped $term"
+done
+for f in \
+    README.md \
+    .claude-plugin/plugin.json \
+    .claude-plugin/marketplace.json \
+    .codex-plugin/plugin.json \
+    .kimi-plugin/plugin.json \
+    .cursor-plugin/plugin.json
+do
+    if grep -Eqi 'one graph' "$f"; then
+        err "$f must not describe design and implementation as one graph"
+    else
+        ok "$f keeps Specs and Plans separate"
+    fi
+done
 # skills/ is discovered automatically. None of the plugins shipped with Claude
 # Code declares a skills path, and inventing one is at best ignored.
 if [ -f .claude-plugin/plugin.json ] && grep -Eq '"skills"[[:space:]]*:' .claude-plugin/plugin.json; then

@@ -1,7 +1,7 @@
 {
   "name": "schematic-planner",
   "version": "0.1.0",
-  "description": "Plan on a Schematic Planner canvas instead of in Markdown: four skills that keep the design and the implementation plan in one graph both you and the agent are looking at.",
+  "description": "Plan software work in a Schematic Planner project: design canvases in specs, executable task canvases in plans, shared by you and the agent.",
   "author": {
     "name": "ruma",
     "email": "minenaturecrew@gmail.com"
@@ -18,11 +18,11 @@
     "skills"
   ],
   "skills": "./skills/",
-  "hooks": {},
   "interface": {
     "displayName": "Schematic Planner",
-    "shortDescription": "Plan in a graph you can point at, not a Markdown file nobody re-reads",
-    "longDescription": "Design and implementation plans live on a Schematic Planner canvas. The agent declares structure through MCP, leaves its open questions as comments on the drawing, and does not start building until you have answered them.",
+    "shortDescription": "Keep project specs and executable plans on shared canvases",
+    "longDescription": "A Schematic Planner project keeps design canvases in specs and linked executable task canvases in plans. The agent works through MCP, leaves open questions as comments, and waits for design and plan approval before building.",
+    "defaultPrompt": "Use Schematic Planner to design and plan this project before implementation.",
     "developerName": "ruma",
     "category": "Developer Tools",
     "capabilities": [
