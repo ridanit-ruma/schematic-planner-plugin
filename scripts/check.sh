@@ -150,7 +150,7 @@ for s in \
     executing-plans-on-canvas test-driven-development systematic-debugging \
     verification-before-completion requesting-code-review receiving-code-review \
     using-git-worktrees finishing-a-development-branch \
-    subagent-driven-development dispatching-parallel-agents
+    subagent-driven-development dispatching-parallel-agents writing-skills
 do
     need_file "skills/$s/SKILL.md"
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
@@ -223,6 +223,25 @@ need_text README.md 'Spec never contains executable `task` nodes' 'README states
 need_text README.md 'upstream and downstream' 'README explains Spec impact tracing'
 need_text README.md 'Plan self-review' 'README explains pre-approval Plan review'
 need_text README.md 'source Spec drift' 'README explains pre-execution drift protection'
+
+need_file references/skill-evals.md
+need_text README.md 'writing-skills' 'README lists writing-skills'
+need_text skills/writing-skills/SKILL.md '[Bb]ehavior baseline' 'writing-skills requires a behavior baseline'
+need_text skills/writing-skills/SKILL.md '[Ee]xisting.*skill' 'writing-skills extends an existing owner first'
+need_text skills/writing-skills/SKILL.md 'quick_validate.py' 'writing-skills requires structural validation'
+need_text skills/writing-skills/SKILL.md 'behavior scenarios' 'writing-skills requires conformance scenarios'
+need_text skills/writing-skills/SKILL.md '[Aa]uthority' 'writing-skills preserves authority boundaries'
+scenario_count=$(grep -Ec '^\| [1-7] \|' references/skill-evals.md 2>/dev/null || true)
+if [ "$scenario_count" -eq 7 ]; then
+    ok "skill eval reference defines seven core scenarios"
+else
+    err "skill eval reference must define seven core scenarios; found $scenario_count"
+fi
+if grep -Eq '\[(TODO|TBD):|(^|[^A-Za-z])(TODO|TBD)([^A-Za-z]|$)' skills/writing-skills/SKILL.md references/skill-evals.md; then
+    err "skill authoring files contain unfinished placeholders"
+else
+    ok "skill authoring files contain no unfinished placeholders"
+fi
 
 # A skill with no frontmatter is invisible to every harness that loads this.
 for skill in skills/*/SKILL.md; do

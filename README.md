@@ -27,6 +27,7 @@ building until those are answered.
 | `finishing-a-development-branch` | Reviews the whole branch before an explicitly authorized finish action |
 | `subagent-driven-development` | Delegates one bounded Plan task while the coordinator owns acceptance |
 | `dispatching-parallel-agents` | Parallelizes only tasks that pass an explicit conflict scan |
+| `writing-skills` | Extends or creates workflow skills from a failing behavior baseline and observable scenarios |
 
 The project is the binding boundary. Its `specs` canvases are the authoritative
 design record; its `plans` canvases are the authoritative execution record and
