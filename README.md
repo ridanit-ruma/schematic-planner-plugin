@@ -79,10 +79,13 @@ The key belongs to the harness's configuration. It never goes in
 3. You answer on the Spec canvas. Resolving a comment unchanged takes the
    agent's recommendation.
 4. `writing-plans-on-canvas` creates a separate canvas in `plans`, records its
-   `Source-Specs` provenance, turns the approved design into tasks, then adds
+   `Source-Specs` provenance, traces affected features upstream and downstream,
+   turns the approved design into tasks, runs a Plan self-review, then adds
    `gate-plan`.
 5. `executing-plans-on-canvas` discovers the matching Plan and builds one ready
-   task at a time.
+   task at a time only after checking for source Spec drift. It uses opaque
+   revisions when available and compares the current affected graph and gates
+   as the compatibility fallback.
 
 The agent never polls for an answer: it leaves the question, reports it, and
 ends its turn. Retrying a write is safe, because every canvas operation is an

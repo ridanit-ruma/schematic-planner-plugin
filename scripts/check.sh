@@ -185,6 +185,9 @@ need_text skills/executing-plans-on-canvas/SKILL.md 'opaque revision' 'executor 
 need_text skills/executing-plans-on-canvas/SKILL.md 'compatibility fallback' 'executor defines a pre-revision fallback'
 need_text skills/executing-plans-on-canvas/SKILL.md 'material drift' 'executor stops stale task execution'
 need_text README.md 'Spec never contains executable `task` nodes' 'README states the Spec content guard'
+need_text README.md 'upstream and downstream' 'README explains Spec impact tracing'
+need_text README.md 'Plan self-review' 'README explains pre-approval Plan review'
+need_text README.md 'source Spec drift' 'README explains pre-execution drift protection'
 
 # A skill with no frontmatter is invisible to every harness that loads this.
 for skill in skills/*/SKILL.md; do
