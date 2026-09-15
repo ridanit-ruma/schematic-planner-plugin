@@ -180,6 +180,10 @@ done
 need_text skills/executing-plans-on-canvas/SKILL.md 'persistent active Plan' 'executor keeps no persistent active plan pointer'
 need_text skills/executing-plans-on-canvas/SKILL.md 'exactly one' 'executor runs exactly one ready task'
 need_text skills/executing-plans-on-canvas/SKILL.md 'Refuse to execute' 'executor rejects tasks outside a valid implementation Plan'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Re-read every named source Spec' 'executor refreshes source Specs before task selection'
+need_text skills/executing-plans-on-canvas/SKILL.md 'opaque revision' 'executor uses product revision metadata when available'
+need_text skills/executing-plans-on-canvas/SKILL.md 'compatibility fallback' 'executor defines a pre-revision fallback'
+need_text skills/executing-plans-on-canvas/SKILL.md 'material drift' 'executor stops stale task execution'
 need_text README.md 'Spec never contains executable `task` nodes' 'README states the Spec content guard'
 
 # A skill with no frontmatter is invisible to every harness that loads this.

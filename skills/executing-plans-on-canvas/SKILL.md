@@ -19,6 +19,22 @@ Refuse to execute a task node found in a Spec, at project top level, or anywhere
 outside the bound project's `plans` folder; report its actual location instead
 of treating the canvas name as proof of stage.
 
+## Source Spec drift guard
+
+Before selecting a ready task, Re-read every named source Spec, including its
+current decisions, affected flow, and comments. If both the Plan's recorded
+source state and the MCP read expose an opaque revision, compare those tokens;
+a mismatch triggers inspection rather than automatically proving incompatibility.
+When revision metadata is absent, use the compatibility fallback: compare the
+current affected graph, decisions, constraints, and gates with the Plan's task
+scope and recorded impact. Treat `updatedAt` as informational only.
+
+If a source now has an unresolved `q-` or `gate-`, or the comparison shows
+material drift in behavior, interfaces, constraints, or acceptance checks, do
+not start a task. Report the changed source and return the Plan to
+`writing-plans-on-canvas` for review or revision. Continue only when the current
+Spec still supports the approved task contract.
+
 Stop and report the Plan URL if any `q-` or `gate-` comment is unresolved.
 Select exactly one `planned` task whose `depends_on` prerequisites are all
 `done`. Read its complete body before changing local files, then set only that
