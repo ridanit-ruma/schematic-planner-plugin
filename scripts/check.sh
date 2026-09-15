@@ -168,6 +168,12 @@ done
 need_text skills/writing-plans-on-canvas/SKILL.md '[Nn]ever.*task.*Spec|do not.*task.*Spec' 'planning skill keeps executable tasks out of specs'
 need_text skills/writing-plans-on-canvas/SKILL.md 'After `create_plan` returns' 'planning verifies placement after Plan creation'
 need_text skills/writing-plans-on-canvas/SKILL.md 'just-created' 'planning limits folder correction to the new Plan'
+need_text skills/writing-plans-on-canvas/SKILL.md 'use `trace`' 'planning uses trace before task authoring'
+need_text skills/writing-plans-on-canvas/SKILL.md 'upstream and downstream' 'planning traces both directions of Spec impact'
+need_text skills/writing-plans-on-canvas/SKILL.md 'Plan self-review' 'planning performs a self-review before approval'
+for term in placeholder 'path and interface' 'task size'; do
+    need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning self-review covers $term"
+done
 for term in list_plans plans Source-Specs; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor discovers implementation plans with $term"
 done

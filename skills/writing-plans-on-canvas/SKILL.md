@@ -8,6 +8,10 @@ description: Use after Spec approval to create or update a separate executable i
 Start with the selected approved Spec id or ids from `specs`. Read each with
 `get_plan(..., { view: "outline" })`; unresolved `q-` or `gate-` comments stop
 the work. Read every source Spec's `constraints` note before planning.
+Before authoring tasks, use `trace` to follow each affected Spec feature
+upstream and downstream. Carry impacted nodes, interfaces, constraints,
+dependent flows, and required checks into the relevant task bodies and review
+context; do not copy unrelated branches of the Spec.
 
 Run `list_plans` for the bound project. Reuse a Plan in `plans` only when its
 scope matches and its description's first line names the same provenance:
@@ -43,9 +47,14 @@ must name:
 4. The smallest implementation that makes it pass.
 5. Passing verification and a commit command.
 
-Set a task to `planned` only when its body is complete. After all tasks and
-dependencies are ready, upsert `gate-plan` on the implementation Plan, run
-`layout`, then read its outline again. Report its URL and every unresolved
+Set a task to `planned` only when its body is complete. Before approval, run a
+Plan self-review: confirm every approved Spec requirement is covered; remove
+placeholder text; verify every path and interface against the repository; check
+dependencies, failing and passing commands, and task size; split a task only
+when the pieces can be executed and verified independently.
+
+After the self-review passes, upsert `gate-plan` on the implementation Plan,
+run `layout`, then read its outline again. Report its URL and every unresolved
 `q-`/`gate-` comment and stop without polling.
 
 When Superpowers is installed, execution may use its test-driven development
