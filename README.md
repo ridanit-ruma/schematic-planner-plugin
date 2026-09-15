@@ -21,6 +21,10 @@ building until those are answered.
 | `test-driven-development` | Observes the relevant failure before the smallest implementation change |
 | `systematic-debugging` | Reproduces unexpected failures and fixes their shared root cause |
 | `verification-before-completion` | Requires fresh evidence before success or completion claims |
+| `requesting-code-review` | Records Spec-compliance review before code-quality review |
+| `receiving-code-review` | Verifies and resolves review findings against the Spec and evidence |
+| `using-git-worktrees` | Optionally isolates work when separation materially reduces risk |
+| `finishing-a-development-branch` | Reviews the whole branch before an explicitly authorized finish action |
 
 The project is the binding boundary. Its `specs` canvases are the authoritative
 design record; its `plans` canvases are the authoritative execution record and
@@ -90,8 +94,15 @@ The key belongs to the harness's configuration. It never goes in
    revisions when available and compares the current affected graph and gates
    as the compatibility fallback. Execution routes through
    `test-driven-development`, `systematic-debugging` when needed, and
-   `verification-before-completion`, then records one evidence comment before
-   marking the task done.
+   `verification-before-completion`, then records one evidence comment.
+6. `requesting-code-review` records `review-spec-<task-slug>` before
+   `review-quality-<task-slug>`; `receiving-code-review` verifies any findings.
+   After the last task, `finishing-a-development-branch` records the final
+   branch-wide `review-branch`. `using-git-worktrees` remains optional.
+
+Implementation approval is not Git mutation authority. Push, PR, merge,
+deletion, discard, or history rewrite requires explicit authorization for that
+action and target; AI or co-author attribution is never added by default.
 
 The agent never polls for an answer: it leaves the question, reports it, and
 ends its turn. Retrying a write is safe, because every canvas operation is an

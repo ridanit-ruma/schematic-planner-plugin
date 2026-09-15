@@ -40,6 +40,9 @@ Select exactly one `planned` task whose `depends_on` prerequisites are all
 `done`. Read its complete body before changing local files, then set only that
 task to `in_progress` with `apply_ops`.
 
+Use `using-git-worktrees` only when concurrent work or isolation materially
+reduces risk; otherwise keep the current tree and preserve unrelated changes.
+
 Use `test-driven-development` to observe the task's intended failing check and
 make the smallest passing change. If a failure is unexpected or persists, use
 `systematic-debugging` to reproduce it, trace its callers and shared path, and
@@ -51,7 +54,20 @@ After verification passes, execute the task's commit step only for its owned
 files. Then upsert exactly one resolved `evidence-<task-slug>` comment containing
 the failing baseline, implementation summary, verification commands and exit or
 result summaries, commit id, and explicit limitations. Update that same comment
-on retry. Only then set the task to `done`; never put execution status on a Spec.
+on retry.
+
+Use `requesting-code-review` to run Spec-compliance review before code-quality review.
+Persist the stages as `review-spec-<task-slug>` and
+`review-quality-<task-slug>` comments; use `receiving-code-review` when either
+stage returns findings. Set the task to `done` only after both stages pass, and
+never put execution status on a Spec.
+
+When no implementation tasks remain, use `finishing-a-development-branch` for
+a final branch-wide review and record its result as `review-branch` before
+offering finish actions. Implementation approval is not Git mutation authority:
+push, PR, merge, deletion, discard, worktree removal, and history rewrite each
+require explicit user authority for the exact action and target immediately
+before it occurs. Never add co-author attribution unless explicitly requested.
 
 For safe, reversible, non-destructive ambiguity, upsert a resolved
 `ruling-<task-slug>` comment with the choice and rationale, then continue. Mark

@@ -148,7 +148,8 @@ echo "-- the skills"
 for s in \
     using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas \
     executing-plans-on-canvas test-driven-development systematic-debugging \
-    verification-before-completion
+    verification-before-completion requesting-code-review receiving-code-review \
+    using-git-worktrees finishing-a-development-branch
 do
     need_file "skills/$s/SKILL.md"
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
@@ -192,6 +193,16 @@ for term in test-driven-development systematic-debugging verification-before-com
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
     need_text README.md "$term" "README lists $term"
 done
+for term in requesting-code-review receiving-code-review using-git-worktrees finishing-a-development-branch; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
+    need_text README.md "$term" "README lists $term"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md 'Spec-compliance review.*before.*code-quality review' 'executor orders Spec review before quality review'
+for ledger in 'review-spec-<task-slug>' 'review-quality-<task-slug>' review-branch; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$ledger" "executor records $ledger"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md '[Ii]mplementation approval.*not.*Git.*authority' 'executor preserves explicit Git authority'
+need_text skills/executing-plans-on-canvas/SKILL.md 'branch-wide review' 'executor requires final branch-wide review'
 need_text skills/executing-plans-on-canvas/SKILL.md 'evidence-<task-slug>' 'executor records one idempotent evidence ledger entry'
 need_text skills/executing-plans-on-canvas/SKILL.md 'ruling-<task-slug>' 'executor records safe reversible rulings'
 need_text skills/executing-plans-on-canvas/SKILL.md 'destructive or irreversible' 'executor narrows blocking to high-risk or external conditions'
