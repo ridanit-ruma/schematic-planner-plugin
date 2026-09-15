@@ -35,10 +35,29 @@ not start a task. Report the changed source and return the Plan to
 `writing-plans-on-canvas` for review or revision. Continue only when the current
 Spec still supports the approved task contract.
 
+Treat the current Plan as the coordination ledger. Resume from Plan state by
+reading task statuses and existing `evidence-*`, `review-*`, `ruling-*`, and
+`blocked-*` comments rather than relying on agent memory or local orchestration
+files.
+
 Stop and report the Plan URL if any `q-` or `gate-` comment is unresolved.
 Select exactly one `planned` task whose `depends_on` prerequisites are all
 `done`. Read its complete body before changing local files, then set only that
 task to `in_progress` with `apply_ops`.
+
+## Optional agent orchestration
+
+Sequential execution remains valid. When the runtime and user allow delegation,
+use `subagent-driven-development` for one independently bounded task. For two or
+more ready tasks, use `dispatching-parallel-agents` only after a conflict scan
+excludes dependency, owned-path, interface, shared-configuration, and migration
+overlap. Each agent still receives exactly one complete task contract; the
+coordinator owns integration, Plan comments, and final status.
+
+After any delegated result returns, inspect the actual repository and rerun its
+checks instead of trusting the report. Returned work receives Spec compliance review before code quality review.
+Record acceptance or rejection in the same task's ordinary evidence and review
+comments. Unexpected overlap falls back to one agent or sequential execution.
 
 Use `using-git-worktrees` only when concurrent work or isolation materially
 reduces risk; otherwise keep the current tree and preserve unrelated changes.
@@ -69,8 +88,8 @@ push, PR, merge, deletion, discard, worktree removal, and history rewrite each
 require explicit user authority for the exact action and target immediately
 before it occurs. Never add co-author attribution unless explicitly requested.
 
-For safe, reversible, non-destructive ambiguity, upsert a resolved
-`ruling-<task-slug>` comment with the choice and rationale, then continue. Mark
+Reversible ambiguity uses a resolved `ruling-<task-slug>` comment with the
+choice and rationale, then continues. Mark
 the task `blocked` only for a destructive or irreversible action, missing user
 authority, an unresolved required gate, a genuine external impasse, or a
 required failure that remains after evidence-driven attempts. Upsert exactly one

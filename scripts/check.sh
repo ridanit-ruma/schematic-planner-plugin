@@ -149,7 +149,8 @@ for s in \
     using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas \
     executing-plans-on-canvas test-driven-development systematic-debugging \
     verification-before-completion requesting-code-review receiving-code-review \
-    using-git-worktrees finishing-a-development-branch
+    using-git-worktrees finishing-a-development-branch \
+    subagent-driven-development dispatching-parallel-agents
 do
     need_file "skills/$s/SKILL.md"
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
@@ -197,6 +198,18 @@ for term in requesting-code-review receiving-code-review using-git-worktrees fin
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
     need_text README.md "$term" "README lists $term"
 done
+for term in subagent-driven-development dispatching-parallel-agents; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
+    need_text README.md "$term" "README lists $term"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md 'Plan.*coordination ledger' 'executor uses the Plan as the coordination ledger'
+need_text skills/executing-plans-on-canvas/SKILL.md 'conflict scan' 'executor requires a pre-dispatch conflict scan'
+for term in dependency 'owned paths' interfaces configuration migrations; do
+    need_text skills/dispatching-parallel-agents/SKILL.md "$term" "parallel conflict scan covers $term"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md '[Rr]eturned.*Spec compliance.*before.*code quality' 'executor reviews returned work in stage order'
+need_text skills/executing-plans-on-canvas/SKILL.md '[Rr]esume.*Plan state' 'executor resumes orchestration from canvas state'
+need_text skills/executing-plans-on-canvas/SKILL.md '[Rr]eversible.*ruling' 'executor continues through reversible ambiguity with a ruling'
 need_text skills/executing-plans-on-canvas/SKILL.md 'Spec-compliance review.*before.*code-quality review' 'executor orders Spec review before quality review'
 for ledger in 'review-spec-<task-slug>' 'review-quality-<task-slug>' review-branch; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$ledger" "executor records $ledger"

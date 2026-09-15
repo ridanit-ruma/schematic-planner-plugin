@@ -25,6 +25,8 @@ building until those are answered.
 | `receiving-code-review` | Verifies and resolves review findings against the Spec and evidence |
 | `using-git-worktrees` | Optionally isolates work when separation materially reduces risk |
 | `finishing-a-development-branch` | Reviews the whole branch before an explicitly authorized finish action |
+| `subagent-driven-development` | Delegates one bounded Plan task while the coordinator owns acceptance |
+| `dispatching-parallel-agents` | Parallelizes only tasks that pass an explicit conflict scan |
 
 The project is the binding boundary. Its `specs` canvases are the authoritative
 design record; its `plans` canvases are the authoritative execution record and
@@ -95,7 +97,11 @@ The key belongs to the harness's configuration. It never goes in
    as the compatibility fallback. Execution routes through
    `test-driven-development`, `systematic-debugging` when needed, and
    `verification-before-completion`, then records one evidence comment.
-6. `requesting-code-review` records `review-spec-<task-slug>` before
+6. When delegation is available and allowed, `subagent-driven-development`
+   assigns one bounded task. `dispatching-parallel-agents` may assign multiple
+   ready tasks only after dependency, path, interface, configuration, and
+   migration conflicts are excluded. Sequential execution remains equivalent.
+7. `requesting-code-review` records `review-spec-<task-slug>` before
    `review-quality-<task-slug>`; `receiving-code-review` verifies any findings.
    After the last task, `finishing-a-development-branch` records the final
    branch-wide `review-branch`. `using-git-worktrees` remains optional.
@@ -106,7 +112,8 @@ action and target; AI or co-author attribution is never added by default.
 
 The agent never polls for an answer: it leaves the question, reports it, and
 ends its turn. Retrying a write is safe, because every canvas operation is an
-upsert keyed by slug.
+upsert keyed by slug. The Plan is the coordination ledger across sessions;
+agent memory and repository-local orchestration state are never required.
 
 ## Repository layout
 
