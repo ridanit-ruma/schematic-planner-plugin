@@ -155,6 +155,8 @@ for term in list_folders create_folder list_plans specs plans legacy; do
     need_text skills/using-schematic-planner/SKILL.md "$term" "entry skill routes project inventory with $term"
 done
 need_text skills/using-schematic-planner/SKILL.md '[Aa]mbigu' 'entry skill stops on ambiguous canvas selection'
+need_text skills/using-schematic-planner/SKILL.md 'specification canvases only from `specs`' 'entry skill enforces Spec folder and content stage'
+need_text skills/using-schematic-planner/SKILL.md 'executable Plans only from `plans`' 'entry skill enforces implementation folder and content stage'
 need_text skills/brainstorming-on-canvas/SKILL.md 'folder.*specs' 'brainstorming files new specs in the specs folder'
 need_text skills/brainstorming-on-canvas/SKILL.md '[Rr]euse' 'brainstorming reuses a matching spec before creation'
 need_text skills/brainstorming-on-canvas/SKILL.md 'After `create_plan` returns' 'brainstorming verifies placement after Spec creation'
@@ -171,6 +173,8 @@ for term in list_plans plans Source-Specs; do
 done
 need_text skills/executing-plans-on-canvas/SKILL.md 'persistent active Plan' 'executor keeps no persistent active plan pointer'
 need_text skills/executing-plans-on-canvas/SKILL.md 'exactly one' 'executor runs exactly one ready task'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Refuse to execute' 'executor rejects tasks outside a valid implementation Plan'
+need_text README.md 'Spec never contains executable `task` nodes' 'README states the Spec content guard'
 
 # A skill with no frontmatter is invisible to every harness that loads this.
 for skill in skills/*/SKILL.md; do

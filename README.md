@@ -26,6 +26,10 @@ what `export_plan` produced, never a source. The plugin reaches the project
 through the Schematic Planner MCP and nothing else, and it never stores an API
 key in a repository.
 
+A Spec never contains executable `task` nodes. An implementation Plan is never
+selected outside `plans`, and a newly created canvas is verified in its intended
+folder before the agent writes design or execution content to it.
+
 ## Install
 
 **Claude Code**

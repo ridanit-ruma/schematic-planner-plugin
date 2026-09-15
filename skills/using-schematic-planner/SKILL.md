@@ -35,6 +35,13 @@ first clarifying question.
 6. Run `list_plans`, scoped to the binding's workspace, and use only the bound
    project's folder-qualified inventory for routing.
 
+Treat stage and folder as one invariant:
+
+- Select specification canvases only from `specs`; executable `task` nodes are forbidden there.
+- Select executable Plans only from `plans`; their tasks must carry approved Spec provenance.
+
+A top-level or wrong-folder canvas is not a fallback candidate.
+
 An older binding may contain `plan`. Treat this legacy id as prior context: read
 it when it still exists, but do not require it, replace it, or recreate it when
 it is gone. Remove the field once project discovery succeeds.

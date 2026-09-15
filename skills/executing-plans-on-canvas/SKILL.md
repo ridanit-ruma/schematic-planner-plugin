@@ -15,6 +15,9 @@ Read the selected Plan with `get_plan(..., { view: "outline" })`. Its descriptio
 must start with `Source-Specs: <plan-id>[, ...]`; a Plan without provenance is
 not executable under this workflow. Read its `constraints` note and, when a task
 depends on design detail not present there, read the named source Spec.
+Refuse to execute a task node found in a Spec, at project top level, or anywhere
+outside the bound project's `plans` folder; report its actual location instead
+of treating the canvas name as proof of stage.
 
 Stop and report the Plan URL if any `q-` or `gate-` comment is unresolved.
 Select exactly one `planned` task whose `depends_on` prerequisites are all
