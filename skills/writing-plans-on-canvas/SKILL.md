@@ -18,9 +18,14 @@ Source-Specs: <plan-id>[, <plan-id>...]
 
 Otherwise call `create_plan` with the bound workspace and project,
 `folder: "plans"`, a scope-specific title, and that `Source-Specs` line at the
-start of its description. One cohesive Spec may produce several Plans when
-delivery slices have independent release order or prerequisites. Do not split
-merely because there are many tasks.
+start of its description. After `create_plan` returns, run workspace-scoped
+`list_plans` and confirm that exact new id appears under the bound project's
+`plans` folder before writing tasks. If the just-created id is elsewhere, use
+`move_plan` to put only that id in `plans`, list again, and stop if placement
+still cannot be verified. Never move a pre-existing canvas as part of this
+correction. One cohesive Spec may produce several Plans when delivery slices
+have independent release order or prerequisites. Do not split merely because
+there are many tasks.
 
 Never add executable task nodes to a Spec. Never persist an active Plan pointer
 or rewrite `.schematic-planner.json`. If several existing Plans are equally
