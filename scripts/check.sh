@@ -157,6 +157,8 @@ done
 need_text skills/using-schematic-planner/SKILL.md '[Aa]mbigu' 'entry skill stops on ambiguous canvas selection'
 need_text skills/brainstorming-on-canvas/SKILL.md 'folder.*specs' 'brainstorming files new specs in the specs folder'
 need_text skills/brainstorming-on-canvas/SKILL.md '[Rr]euse' 'brainstorming reuses a matching spec before creation'
+need_text skills/brainstorming-on-canvas/SKILL.md 'After `create_plan` returns' 'brainstorming verifies placement after Spec creation'
+need_text skills/brainstorming-on-canvas/SKILL.md 'just-created' 'brainstorming limits folder correction to the new Spec'
 
 for term in list_plans create_plan plans Source-Specs; do
     need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning skill creates folder-qualified plans with $term"
