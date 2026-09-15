@@ -145,7 +145,11 @@ done
 echo
 echo "-- the skills"
 
-for s in using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas executing-plans-on-canvas; do
+for s in \
+    using-schematic-planner brainstorming-on-canvas writing-plans-on-canvas \
+    executing-plans-on-canvas test-driven-development systematic-debugging \
+    verification-before-completion
+do
     need_file "skills/$s/SKILL.md"
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
     need_text "skills/$s/SKILL.md" '^description: .*[Uu]se ' "$s says when to use it"
@@ -184,6 +188,13 @@ need_text skills/executing-plans-on-canvas/SKILL.md 'Re-read every named source 
 need_text skills/executing-plans-on-canvas/SKILL.md 'opaque revision' 'executor uses product revision metadata when available'
 need_text skills/executing-plans-on-canvas/SKILL.md 'compatibility fallback' 'executor defines a pre-revision fallback'
 need_text skills/executing-plans-on-canvas/SKILL.md 'material drift' 'executor stops stale task execution'
+for term in test-driven-development systematic-debugging verification-before-completion; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
+    need_text README.md "$term" "README lists $term"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md 'evidence-<task-slug>' 'executor records one idempotent evidence ledger entry'
+need_text skills/executing-plans-on-canvas/SKILL.md 'ruling-<task-slug>' 'executor records safe reversible rulings'
+need_text skills/executing-plans-on-canvas/SKILL.md 'destructive or irreversible' 'executor narrows blocking to high-risk or external conditions'
 need_text README.md 'Spec never contains executable `task` nodes' 'README states the Spec content guard'
 need_text README.md 'upstream and downstream' 'README explains Spec impact tracing'
 need_text README.md 'Plan self-review' 'README explains pre-approval Plan review'

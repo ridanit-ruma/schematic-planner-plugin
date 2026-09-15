@@ -40,16 +40,24 @@ Select exactly one `planned` task whose `depends_on` prerequisites are all
 `done`. Read its complete body before changing local files, then set only that
 task to `in_progress` with `apply_ops`.
 
-Follow the task body test-first: add its failing check, run it and confirm the
-expected failure, make the smallest implementation change, and run the passing
-verification. Execute its commit step only for the files the task owns. On
-success, set the task to `done` on the implementation Plan; never put execution
-status on a Spec.
+Use `test-driven-development` to observe the task's intended failing check and
+make the smallest passing change. If a failure is unexpected or persists, use
+`systematic-debugging` to reproduce it, trace its callers and shared path, and
+test one causal hypothesis. Before any success claim, use
+`verification-before-completion` to run fresh focused and proportionate broader
+checks.
 
-If execution cannot continue, set the task to `blocked` and upsert exactly one
+After verification passes, execute the task's commit step only for its owned
+files. Then upsert exactly one resolved `evidence-<task-slug>` comment containing
+the failing baseline, implementation summary, verification commands and exit or
+result summaries, commit id, and explicit limitations. Update that same comment
+on retry. Only then set the task to `done`; never put execution status on a Spec.
+
+For safe, reversible, non-destructive ambiguity, upsert a resolved
+`ruling-<task-slug>` comment with the choice and rationale, then continue. Mark
+the task `blocked` only for a destructive or irreversible action, missing user
+authority, an unresolved required gate, a genuine external impasse, or a
+required failure that remains after evidence-driven attempts. Upsert exactly one
 `blocked-<task-slug>` comment with evidence, attempts, and the recommended human
-decision. Report it and end the turn without polling. Never recreate deleted
-nodes, change human layout, or silently switch Plans.
-
-When Superpowers is available, use its relevant implementation, testing,
-debugging, and verification skills. Otherwise follow the task body directly.
+decision, then report it and end without polling. Never recreate deleted nodes,
+change human layout, or silently switch Plans.

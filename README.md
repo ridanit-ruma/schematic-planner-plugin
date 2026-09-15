@@ -18,6 +18,9 @@ building until those are answered.
 | `brainstorming-on-canvas` | Creates or extends a design canvas in `specs` and gates it |
 | `writing-plans-on-canvas` | Creates a linked implementation canvas in `plans` with test-first tasks |
 | `executing-plans-on-canvas` | Finds one ready task in `plans` and keeps its status honest |
+| `test-driven-development` | Observes the relevant failure before the smallest implementation change |
+| `systematic-debugging` | Reproduces unexpected failures and fixes their shared root cause |
+| `verification-before-completion` | Requires fresh evidence before success or completion claims |
 
 The project is the binding boundary. Its `specs` canvases are the authoritative
 design record; its `plans` canvases are the authoritative execution record and
@@ -85,7 +88,10 @@ The key belongs to the harness's configuration. It never goes in
 5. `executing-plans-on-canvas` discovers the matching Plan and builds one ready
    task at a time only after checking for source Spec drift. It uses opaque
    revisions when available and compares the current affected graph and gates
-   as the compatibility fallback.
+   as the compatibility fallback. Execution routes through
+   `test-driven-development`, `systematic-debugging` when needed, and
+   `verification-before-completion`, then records one evidence comment before
+   marking the task done.
 
 The agent never polls for an answer: it leaves the question, reports it, and
 ends its turn. Retrying a write is safe, because every canvas operation is an
@@ -94,7 +100,7 @@ upsert keyed by slug.
 ## Repository layout
 
 ```
-skills/          the four skill bodies — the only place behaviour is defined
+skills/          skill bodies — the only place behaviour is defined
 references/      the MCP surface, the binding schema, per-harness setup
 .claude-plugin/  plugin.json and marketplace.json
 .mcp.json        ships the canvas connection with the plugin
