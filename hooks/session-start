@@ -27,8 +27,24 @@ escape_for_json() {
     printf '%s' "$s"
 }
 
+# Whether this machine has a key at all.
+#
+# The hook cannot see whether the MCP server actually connected — that happens
+# after it runs. It can see the two things whose absence explains the commonest
+# failure by far: a configuration naming ${SCHEMATIC_PLANNER_KEY} and an
+# environment that has never had it set. The server then answers 401, the tools
+# are simply absent, and a session with no idea why goes and writes the plan
+# into a Markdown file instead, which is the one outcome this plugin exists to
+# prevent. So when there is no key anywhere, say so up front.
+unconfigured=""
+if [ -z "${SCHEMATIC_PLANNER_KEY:-}" ] \
+    && ! grep -q '"schematic-planner"' "${HOME}/.claude.json" 2>/dev/null \
+    && [ ! -f "${HOME}/.schematic-planner/env.sh" ]; then
+    unconfigured="\n\n**No Schematic Planner key is configured on this machine.** If the canvas tools (list_plans, create_plan, apply_ops) are missing from your tool list, that is why — do not work around it by writing the plan into a file. Use the 'schematic-planner:connecting-the-canvas' skill."
+fi
+
 entry_escaped=$(escape_for_json "$entry_skill")
-session_context="<EXTREMELY_IMPORTANT>\nPlans in this project live on a Schematic Planner canvas, not in Markdown files.\n\n**Below is the full content of your 'schematic-planner:using-schematic-planner' skill. For the other three skills, use the 'Skill' tool.**\n\n${entry_escaped}\n</EXTREMELY_IMPORTANT>"
+session_context="<EXTREMELY_IMPORTANT>\nPlans in this project live on a Schematic Planner canvas, not in Markdown files.${unconfigured}\n\n**Below is the full content of your 'schematic-planner:using-schematic-planner' skill. For the other skills, use the 'Skill' tool.**\n\n${entry_escaped}\n</EXTREMELY_IMPORTANT>"
 
 # Each harness reads a different field, and Claude Code reads two of them without
 # deduplicating, so emit exactly one.

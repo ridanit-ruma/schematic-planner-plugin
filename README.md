@@ -59,22 +59,39 @@ codex plugin add schematic-planner@schematic-planner
 Kimi Code reads the same manifests. Cursor reads `.cursor-plugin/plugin.json`.
 OpenCode loads `.opencode/plugins/schematic-planner.js`.
 
-## Connect the project
+## Connect the canvas
 
 Get a key from your instance's agent settings — `/settings/agents`, or
-<https://schematic-planner.com/settings/agents> — which hands over the whole
-client configuration as pasteable JSON.
-
-In Claude Code the plugin ships its own `.mcp.json`, so one environment variable
-is the whole setup and it applies in every directory:
+<https://schematic-planner.com/settings/agents>. Then, once, for every agent on
+the machine:
 
 ```sh
-export SCHEMATIC_PLANNER_KEY="…"
+scripts/connect --key sp_…
 ```
 
-Everywhere else, and as the fallback anywhere, the per-harness instructions are
-in `references/mcp-setup-claude-code.md`, `references/mcp-setup-codex.md` and
-`references/mcp-setup-cursor.md`.
+It checks the key against the instance before writing anything, then merges a
+`schematic-planner` entry into each client's own configuration — Claude Code at
+user scope, Codex, Cursor, Kimi, Kimi Code and OpenCode in their own files —
+leaving everything else in them alone. Start a new session afterwards: MCP
+servers connect at startup.
+
+```sh
+scripts/connect --host https://planner.example.com --key sp_…   # self-hosted
+scripts/connect --client cursor --key sp_…                      # just one
+scripts/connect --print                                         # show, write nothing
+```
+
+Codex holds no credential of its own and reads `SCHEMATIC_PLANNER_KEY` from the
+environment, so it gets one more step, which the script prints.
+
+Per-harness detail, including how to do it by hand, is in
+`references/mcp-setup-*.md`.
+
+**When the tools are missing.** The commonest cause is a configuration that
+names `${SCHEMATIC_PLANNER_KEY}` and an environment that never had it set: the
+header goes out empty, the server answers 401, and the tools are simply absent
+with nothing to read. That is what the command above fixes, and what the
+`connecting-the-canvas` skill tells an agent to run.
 
 The key belongs to the harness's configuration. It never goes in
 `.schematic-planner.json`, which is committed.

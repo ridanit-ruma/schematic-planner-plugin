@@ -1,42 +1,56 @@
 # Connecting the canvas — Claude Code
 
-## Normally there is nothing to do
-
-This plugin ships its own `.mcp.json`, so installing it declares the
-`schematic-planner` server for every project at once. Supply the key as an
-environment variable and the connection is there:
+## One command
 
 ```sh
-export SCHEMATIC_PLANNER_KEY="…"      # from /settings/agents
+"${CLAUDE_PLUGIN_ROOT}/scripts/connect" --key <your key>
 ```
 
-Put it wherever your shell reads on login, not in a repository file.
+The key is on your instance at `/settings/agents` — `https://schematic-planner.com/settings/agents`
+on the hosted one. The script checks it against the server before writing
+anything, then registers `schematic-planner` at **user scope**, so it is there in
+every directory rather than in the one you happened to be sitting in.
 
-Get the key from the Schematic Planner settings page — `/settings/agents` on
-your instance, or <https://schematic-planner.com/settings/agents> — which hands
-over the whole client configuration as pasteable JSON.
+Then start a new session. MCP servers connect at startup, so a server added
+mid-session is not there until the next one.
 
-## Telling the two failures apart
+A self-hosted instance takes `--host https://planner.example.com`. The host is
+the only part that changes; the path is always `/api/mcp`, and one key reaches
+every workspace its owner belongs to — a key belongs to a person, not to a
+workspace.
 
-When the tools are missing, say which of these it is. They have different fixes
-and the second one is far more common.
+## Telling the failures apart
 
-**Nothing is configured.** No `schematic-planner` entry anywhere. Install the
-plugin, or configure the server by hand as below.
+When the tools are missing, say which of these it is. They look identical from
+inside a session and have different fixes.
 
-**Configured, but not here.** Claude Code stores MCP servers per directory in
-`~/.claude.json`, so a server added while sitting in one project is invisible in
-the next. To see which directories have it:
+**Nothing is configured.** No `schematic-planner` entry anywhere. Run the
+command above.
+
+**Configured, but refused.** The entry exists and the key is missing, empty or
+wrong, so the server answers `401` and Claude Code reports the server as failed
+to connect. This is the common one: a configuration naming
+`${SCHEMATIC_PLANNER_KEY}` and an environment that never had it set. Run the
+command above; it replaces the entry with one that holds the key.
+
+**Configured, but not here.** Claude Code stores MCP servers per directory, so a
+server added in one project is invisible in the next:
 
 ```sh
 grep -n '"schematic-planner"' ~/.claude.json
 ```
 
-The fix is to register it once at user scope rather than per directory.
+Run the command above, which registers it once at user scope.
 
-## Configuring it by hand
+## Doing it by hand
 
-**User scope — available in every directory:**
+`--print` writes nothing and shows what is needed:
+
+```sh
+"${CLAUDE_PLUGIN_ROOT}/scripts/connect" --print --client claude-code
+```
+
+which is:
 
 ```sh
 claude mcp add --scope user --transport http schematic-planner \
@@ -44,8 +58,11 @@ claude mcp add --scope user --transport http schematic-planner \
   --header "Authorization: Bearer <your key>"
 ```
 
-**Project scope, committable** — Claude Code expands environment variables in
-`.mcp.json`, so the file can be checked in without the key:
+`--transport http` is not optional: without it a client has no way to know the
+URL names a remote server rather than a command to run.
+
+A project `.mcp.json` can be committed without the key, because Claude Code
+expands environment variables in it:
 
 ```json
 {
@@ -59,16 +76,5 @@ claude mcp add --scope user --transport http schematic-planner \
 }
 ```
 
-`"type": "http"` is not optional: without it a client has no way to know the URL
-names a remote server rather than a command to run.
-
-## A self-hosted instance
-
-Replace the host and nothing else. The path is always `/api/mcp`, and one key
-works across every workspace its owner belongs to — a key belongs to a person,
-not to a workspace.
-
-## After changing any of this
-
-Restart the session. MCP servers are connected at startup, so a server added
-mid-session is not there until the next one.
+That is the form that fails silently when the variable is unset, so prefer user
+scope unless the file has to be shared.

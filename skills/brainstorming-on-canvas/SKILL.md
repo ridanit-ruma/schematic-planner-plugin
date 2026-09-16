@@ -13,8 +13,12 @@ Classify the request and announce the result:
 
 - **Spike:** a feasibility question whose deliverable is an answer. Do not open
   or alter a Plan.
-- **Bounded:** a scoped change to an existing flow. Reuse the one matching Spec
-  from `specs`, or create a cohesive Spec there when none covers it.
+- **Bounded:** a scoped change to a flow that is already here to read. Reuse the
+  one matching Spec from `specs` and change it. When no Spec draws that flow,
+  do not open one: say what you intend in two or three sentences, get a yes, and
+  build. A design canvas raised for a one-flag change is ceremony people learn
+  to route around, and it is a second drawing of a system nobody drew the first
+  time.
 - **Architectural:** a new subsystem or restructuring. Reuse an existing
   in-progress Spec only when it clearly owns the same design; otherwise create a
   separate Spec.
@@ -41,6 +45,10 @@ then call `layout` without coordinates.
 For each human decision, upsert `q-<topic>` on the affected node with an A
 option marked recommended, a B option, and: “Resolve as-is to take A, or write
 your answer here and resolve.” When the design is ready, upsert `gate-design`.
+
+Read what the person answered before acting on it. The outline prints an open
+note whole, so a ticked box is visible there; a note you have already resolved
+is not, and `view: 'graph'` is where it went.
 
 Read the outline again. If any `q-` or `gate-` comment is unresolved, report the
 Spec URL and every waiting comment, then stop without polling. An approved Spec

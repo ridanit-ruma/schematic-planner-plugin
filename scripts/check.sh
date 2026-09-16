@@ -150,7 +150,8 @@ for s in \
     executing-plans-on-canvas test-driven-development systematic-debugging \
     verification-before-completion requesting-code-review receiving-code-review \
     using-git-worktrees finishing-a-development-branch \
-    subagent-driven-development dispatching-parallel-agents writing-skills
+    subagent-driven-development dispatching-parallel-agents writing-skills \
+    connecting-the-canvas
 do
     need_file "skills/$s/SKILL.md"
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
@@ -256,9 +257,19 @@ done
 echo
 echo "-- the setup references"
 
-for h in claude-code codex cursor; do
+for h in claude-code codex cursor kimi opencode; do
     need_file "references/mcp-setup-$h.md"
 done
+
+# Every client the connect script claims to handle has somewhere to read about
+# it. A client it writes for and nobody documents is one nobody can check.
+for h in claude-code codex cursor kimi opencode; do
+    need_text scripts/connect.mjs "^  '?$h'?:" "connect handles $h"
+done
+
+need_text skills/connecting-the-canvas/SKILL.md 'scripts/connect' 'the connect skill runs the connect script'
+need_text skills/using-schematic-planner/SKILL.md 'connecting-the-canvas' 'the entry skill knows how to get connected'
+need_text hooks/session-start 'SCHEMATIC_PLANNER_KEY' 'the session hook notices a machine with no key'
 
 echo
 echo "-- no credentials anywhere"

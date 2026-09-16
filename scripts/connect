@@ -1,0 +1,23 @@
+#!/bin/sh
+# Connects this machine's agents to a Schematic Planner instance.
+#
+# A wrapper, because the work needs a JSON parser and every one of these
+# configuration files is JSON. If Node is not here, the same script prints the
+# snippets for hand-editing rather than leaving you with nothing.
+
+set -eu
+
+here=$(cd "$(dirname "$0")" && pwd)
+
+if command -v node >/dev/null 2>&1; then
+    exec node "$here/connect.mjs" "$@"
+fi
+
+cat >&2 <<'MSG'
+This needs Node to edit the agent configuration files, and there is no `node`
+on your PATH.
+
+Install Node, or set it up by hand — the file each client wants, and what goes
+in it, is in references/mcp-setup-*.md beside this script.
+MSG
+exit 1
