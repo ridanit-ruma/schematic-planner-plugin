@@ -15,7 +15,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const pluginRoot = path.resolve(here, '..', '..');
 
 export const name = 'schematic-planner';
-export const version = '0.1.0';
+export const version = '0.2.0';
 export const skillsDirectory = path.join(pluginRoot, 'skills');
 
 export default {

@@ -1,6 +1,6 @@
 {
   "name": "schematic-planner",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Plan software work in a Schematic Planner project: design canvases in specs, executable task canvases in plans, shared by you and the agent.",
   "author": {
     "name": "ruma",
