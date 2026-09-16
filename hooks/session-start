@@ -37,7 +37,9 @@ escape_for_json() {
 # into a Markdown file instead, which is the one outcome this plugin exists to
 # prevent. So when there is no key anywhere, say so up front.
 unconfigured=""
-if [ -z "${SCHEMATIC_PLANNER_KEY:-}" ] \
+if [ -n "${PLUGIN_ROOT:-}" ] && [ -z "${SCHEMATIC_PLANNER_KEY:-}" ]; then
+    unconfigured="\n\n**No Schematic Planner key is present in this Codex process.** If the canvas tools (list_plans, create_plan, apply_ops) are missing from your tool list, that is why — do not work around it by writing the plan into a file. Tell them in one line that \`\$schematic-planner:connect <their key>\` fixes it, and that the key is on their instance at /settings/agents; run it for them if they hand one over. An existing env file is not enough unless the environment that launched Codex loaded it."
+elif [ -z "${SCHEMATIC_PLANNER_KEY:-}" ] \
     && ! grep -q '"schematic-planner"' "${HOME}/.claude.json" 2>/dev/null \
     && [ ! -f "${HOME}/.schematic-planner/env.sh" ]; then
     unconfigured="\n\n**No Schematic Planner key is configured on this machine.** If the canvas tools (list_plans, create_plan, apply_ops) are missing from your tool list, that is why — do not work around it by writing the plan into a file. Tell them in one line that \`/schematic-planner:connect <their key>\` fixes it, and that the key is on their instance at /settings/agents; run it for them if they hand one over. The 'schematic-planner:connecting-the-canvas' skill has the rest."

@@ -56,6 +56,10 @@ codex plugin marketplace add ridanit-ruma/schematic-planner-plugin
 codex plugin add schematic-planner@schematic-planner
 ```
 
+In Codex CLI, open `/hooks` and trust the Schematic Planner `SessionStart`
+hook when prompted. Other Codex surfaces show the corresponding hook review in
+their UI. Plugin hooks are not trusted merely because the plugin was installed.
+
 Kimi Code reads the same manifests. Cursor reads `.cursor-plugin/plugin.json`.
 OpenCode loads `.opencode/plugins/schematic-planner.js`.
 
@@ -65,13 +69,23 @@ that is the next section, and it is one command.
 ## Connect the canvas
 
 Get a key from your instance's agent settings — `/settings/agents`, or
-<https://schematic-planner.com/settings/agents>. Then, once, in Claude Code:
+<https://schematic-planner.com/settings/agents>. Then connect from the agent you
+are using.
+
+Claude Code keeps its existing command:
 
 ```
 /schematic-planner:connect sp_…
 ```
 
-or from a shell, for every agent on the machine:
+Codex exposes the shared connect skill directly:
+
+```text
+$schematic-planner:connect sp_…
+```
+
+From a plugin checkout, the shell command can configure every detected agent on
+the machine:
 
 ```sh
 scripts/connect sp_…
@@ -90,7 +104,10 @@ scripts/connect --print                            # show, write nothing
 ```
 
 Codex holds no credential of its own and reads `SCHEMATIC_PLANNER_KEY` from the
-environment, so it gets one more step, which the script prints.
+environment, so it gets one more step, which the script prints. Load the
+generated env file in the environment that launches Codex, fully quit Codex,
+and start a new session. An env file that an already-running desktop app never
+loaded does not connect that app.
 
 Per-harness detail, including how to do it by hand, is in
 `references/mcp-setup-*.md`.
@@ -147,7 +164,7 @@ agent memory and repository-local orchestration state are never required.
 skills/          skill bodies — the only place behaviour is defined
 references/      the MCP surface, the binding schema, per-harness setup
 .claude-plugin/  plugin.json and marketplace.json
-commands/        /schematic-planner:connect, the short way in
+commands/        Claude Code's retained legacy connect entry point
 scripts/connect  points every agent on the machine at your instance
 hooks/           session-start injection, and its Windows wrapper
 scripts/         check.sh (structure, credentials), sync-harnesses.sh (drift)

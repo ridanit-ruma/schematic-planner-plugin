@@ -22,7 +22,8 @@ absent and there is no error to read.
 **Configured, but refused.** The entry exists and the key is missing, empty or
 wrong, so the server answers `401` and the client reports the server as failed
 to connect. The commonest cause by far: a configuration that names
-`${SCHEMATIC_PLANNER_KEY}` and an environment that has never had it set.
+`${SCHEMATIC_PLANNER_KEY}` and a Codex process that never received it. An
+existing `~/.schematic-planner/env.sh` is not proof that the process sourced it.
 
 A third, specific to Claude Code: **configured, but not here.** Claude Code
 stores MCP servers per directory, so a server added while sitting in one project
@@ -32,17 +33,18 @@ is what the script below does.
 
 ## Connect it
 
-If they are here to connect rather than in the middle of something else, the
-short way is theirs to type:
+If they are here to connect rather than in the middle of something else, use
+the short way for the active client:
 
-```
-/schematic-planner:connect <their key>
-```
+- Codex: `$schematic-planner:connect <their key>`
+- Claude Code: `/schematic-planner:connect <their key>`
 
-Otherwise, one command, for every agent on the machine:
+Other harnesses, or a user connecting several installed agents at once, use the
+shared implementation. Resolve `../../scripts/connect` relative to this
+`SKILL.md`; do not assume the current directory is the plugin checkout.
 
 ```sh
-"${CLAUDE_PLUGIN_ROOT}/scripts/connect" <the key>
+<resolved-plugin-path>/scripts/connect <the key>
 ```
 
 It checks the key against the instance before writing anything, then writes the
@@ -75,5 +77,7 @@ and a second failure reads as the connection not having worked.
   configuration; the tools being absent is a symptom of both.
 - **Codex** holds no credential of its own and reads `SCHEMATIC_PLANNER_KEY`
   from the environment. The script writes the key to `~/.schematic-planner/env.sh`
-  and prints the line to add to a shell profile. Until that line is sourced,
-  Codex will be configured and still refused.
+  and prints the line to add to a shell profile. Until the environment that
+  launches Codex loads that file, Codex will be configured and still refused.
+  Fully quit desktop clients before relaunching them; changing a shell after an
+  app starts cannot change the app's environment.

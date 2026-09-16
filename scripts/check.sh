@@ -123,6 +123,7 @@ need_text hooks/session-start 'using-schematic-planner' "hook injects the entry 
 need_file hooks/run-hook.cmd
 
 need_file .codex-plugin/plugin.json
+need_text .codex-plugin/plugin.json '"skills": "\./skills/"' "Codex discovers the shared skills"
 need_file .kimi-plugin/plugin.json
 need_file .cursor-plugin/plugin.json
 need_file .opencode/plugins/schematic-planner.js
@@ -154,7 +155,7 @@ for s in \
     verification-before-completion requesting-code-review receiving-code-review \
     using-git-worktrees finishing-a-development-branch \
     subagent-driven-development dispatching-parallel-agents writing-skills \
-    connecting-the-canvas
+    connecting-the-canvas connect
 do
     need_file "skills/$s/SKILL.md"
     need_text "skills/$s/SKILL.md" "^name: $s\$" "$s declares its name"
@@ -303,14 +304,41 @@ for h in claude-code codex cursor kimi opencode; do
 done
 
 need_text skills/connecting-the-canvas/SKILL.md 'scripts/connect' 'the connect skill runs the connect script'
+need_file skills/connect/SKILL.md
+need_text skills/connect/SKILL.md '^name: connect$' 'Codex exposes connect by its short name'
+need_text skills/connect/SKILL.md '\.\./\.\./scripts/connect' 'connect reuses the shared implementation'
+need_text skills/connect/SKILL.md '[-][-]client codex' 'connect targets Codex when invoked from Codex'
+need_text skills/connect/SKILL.md 'Claude Code' 'connect preserves the Claude Code path'
 need_file commands/connect.md
 need_text commands/connect.md '^description: ' 'the connect command says what it is'
 need_text commands/connect.md 'scripts/connect' 'the connect command runs the connect script'
 need_text commands/connect.md 'ARGUMENTS' 'the connect command passes what was typed'
 need_text skills/connecting-the-canvas/SKILL.md 'schematic-planner:connect' 'the connect skill offers the short way first'
 need_text hooks/session-start 'schematic-planner:connect' 'the session hook names the command, not only the skill'
+need_text hooks/session-start 'PLUGIN_ROOT' 'the session hook distinguishes Codex from Claude Code'
+need_text hooks/session-start 'No Schematic Planner key is present in this Codex process' 'the Codex hook checks the process, not an env file'
 need_text skills/using-schematic-planner/SKILL.md 'connecting-the-canvas' 'the entry skill knows how to get connected'
 need_text hooks/session-start 'SCHEMATIC_PLANNER_KEY' 'the session hook notices a machine with no key'
+
+# Codex must warn when the process lacks the key even if an env file exists.
+# The file only helps when the process that launched Codex actually sourced it.
+hook_home=$(mktemp -d "${TMPDIR:-/tmp}/schematic-planner-hook.XXXXXX")
+mkdir -p "$hook_home/.schematic-planner"
+: > "$hook_home/.schematic-planner/env.sh"
+codex_hook_output=$(
+    HOME="$hook_home" \
+    PLUGIN_ROOT="$PWD" \
+    CLAUDE_PLUGIN_ROOT="$PWD" \
+    SCHEMATIC_PLANNER_KEY= \
+    hooks/session-start
+)
+rm "$hook_home/.schematic-planner/env.sh"
+rmdir "$hook_home/.schematic-planner" "$hook_home"
+if printf '%s\n' "$codex_hook_output" | grep -Fq 'No Schematic Planner key is present in this Codex process'; then
+    ok "Codex hook warns when only an unloaded env file exists"
+else
+    err "Codex hook mistook an unloaded env file for a process credential"
+fi
 
 echo
 echo "-- no credentials anywhere"

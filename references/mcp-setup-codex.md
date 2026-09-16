@@ -1,9 +1,21 @@
 # Connecting the canvas — Codex
 
-## One command
+## Easiest path
+
+In Codex, invoke the plugin's dedicated skill:
+
+```text
+$schematic-planner:connect <your key>
+```
+
+It resolves and runs the shared connection implementation with `--client
+codex`, so Claude Code and the other supported agents continue to use the same
+verified implementation without sharing their invocation surface.
+
+## From a plugin checkout
 
 ```sh
-"${CLAUDE_PLUGIN_ROOT}/scripts/connect" --key <your key> --client codex
+scripts/connect --key <your key> --client codex
 ```
 
 The key is on your instance at `/settings/agents`. The script checks it against
@@ -32,7 +44,15 @@ your shell profile.
 It is not written into your profile for you. Appending to a login file is an
 edit you did not ask for, in the one file that locks you out when it goes wrong.
 
-Restart Codex afterwards.
+Load the file in the environment that launches Codex, then fully restart Codex
+and begin a new session. Sourcing it in a terminal does not alter a desktop app
+that is already running, and a desktop launcher may not read the same shell
+profile. If the tools remain absent, verify that the new Codex process has a
+non-empty `SCHEMATIC_PLANNER_KEY` without printing its value.
+
+Plugin hooks require review before Codex runs them. In Codex CLI, use `/hooks`
+to review and trust the Schematic Planner `SessionStart` hook; in other Codex
+surfaces, accept the corresponding hook review prompt when it appears.
 
 ## Check the key names against your version
 
