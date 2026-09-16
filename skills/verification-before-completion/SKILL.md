@@ -28,7 +28,7 @@ softening the completion claim.
 ## Record the boundary
 
 Hand back every command, exit or result summary, and any untested limitation for
-the implementation Plan's single `evidence-<task-slug>` comment. Include the
+the implementation Plan's single `evidence-<slug>` comment. Include the
 commit id after the task's owned files are committed. Update the same evidence
 comment on retry rather than creating a second history.
 
@@ -36,3 +36,16 @@ Mark the task done only when current evidence proves all acceptance criteria.
 If an essential check cannot run, say what is missing and whether the task is
 genuinely blocked; partial verification must be described as partial. Never use
 confidence, plausibility, or a passing unrelated check as a substitute.
+
+## Red flags
+
+These thoughts are the failure, not the way round it.
+
+| Thought | What is actually true |
+| --- | --- |
+| "The tests passed a moment ago." | Before or after the last edit? Fresh means after the final change, not earlier in the turn. |
+| "The subagent reported its checks passed." | A report is a claim. Run them yourself, in this repository. |
+| "Nothing went wrong, so it worked." | Silence is success only for a command that defines it that way. Read the exit result. |
+| "The focused check passed, so the change is safe." | It proves its own behaviour and nothing else. The diff decides what else has to run. |
+| "I will mark it done and verify next turn." | Then the canvas says done over work nobody has proved, to somebody who is reading it as finished. |
+| "One check will not run here, but the rest passed." | Then the verification is partial and has to be described as partial. Say what is missing. |

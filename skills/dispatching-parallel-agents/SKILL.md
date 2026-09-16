@@ -42,8 +42,8 @@ agents do not race on shared Git state.
 Process each result as it arrives; never accept a batch by consensus. Inspect
 the actual worktree, confirm path and interface ownership, run focused checks,
 then review Spec compliance before code quality. The coordinator records that
-task's `evidence-<task-slug>`, `review-spec-<task-slug>`,
-`review-quality-<task-slug>`, `ruling-<task-slug>`, or
+task's `evidence-<slug>`, `the evidence note's Spec compliance section`,
+`the evidence note's Quality section`, `evidence-<slug>`, or
 `blocked-<task-slug>` entry and alone sets final task status.
 
 After all accepted results are integrated, run combined checks for cross-task

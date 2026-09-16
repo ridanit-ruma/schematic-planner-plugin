@@ -11,11 +11,12 @@ the same Plan contract.
 
 ## Resume from the Plan
 
-Read the current Plan and every named source Spec. Reconstruct progress from
-task statuses and `evidence-*`, `review-spec-*`, `review-quality-*`, `ruling-*`,
-and `blocked-*` comments, never from agent memory or a repository-local
-coordination directory. Select only a task whose dependencies and gates are
-satisfied, understand it fully, and have the coordinator set it `in_progress`.
+Read the current Plan and every Spec it cites. `next_task` reconstructs progress
+for you — where the Plan has got to, what is started, what is blocked and on
+what, and what can be taken now with its body — and the `evidence-*` and
+`blocked-*` notes carry the rest. Never from agent memory, and never from a
+coordination directory on disk. Take a task `next_task` says is ready,
+understand it fully, and have the coordinator set it `in_progress`.
 
 ## Assign one bounded task
 
@@ -39,8 +40,8 @@ baseline when applicable, run fresh focused and combined checks, review Spec
 compliance first, then code quality, and integrate only a passing result.
 
 The coordinator alone updates final task status and the idempotent ledger:
-`evidence-<task-slug>`, `review-spec-<task-slug>`,
-`review-quality-<task-slug>`, `ruling-<task-slug>`, or
+`evidence-<slug>`, `the evidence note's Spec compliance section`,
+`the evidence note's Quality section`, `evidence-<slug>`, or
 `blocked-<task-slug>`. Use a resolved ruling for safe reversible ambiguity;
 block only for a genuine gate, authority, destructive-action, or external
 impasse. On interruption or failure, re-read current Plan and repository state

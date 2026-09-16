@@ -122,8 +122,8 @@ The key belongs to the harness's configuration. It never goes in
    assigns one bounded task. `dispatching-parallel-agents` may assign multiple
    ready tasks only after dependency, path, interface, configuration, and
    migration conflicts are excluded. Sequential execution remains equivalent.
-7. `requesting-code-review` records `review-spec-<task-slug>` before
-   `review-quality-<task-slug>`; `receiving-code-review` verifies any findings.
+7. `requesting-code-review` records `the evidence note's Spec compliance section` before
+   `the evidence note's Quality section`; `receiving-code-review` verifies any findings.
    After the last task, `finishing-a-development-branch` records the final
    branch-wide `review-branch`. `using-git-worktrees` remains optional.
 

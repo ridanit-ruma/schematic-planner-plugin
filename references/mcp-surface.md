@@ -24,6 +24,7 @@ The product README's tool table is slightly behind the code; this file is not.
 | `move_plan({ planId, workspace?, projectSlug?, folder? })` | File a plan in a folder, at project top level, or in another project |
 | `delete_plan(id)` | Remove a plan |
 | `get_plan(id, { view })` | Read. `view` is `outline`, `detail`, `graph` or `markdown` |
+| `next_task(id, { limit? })` | Where the plan has got to, and what to do next |
 | `read_nodes(id, { slugs })` | What the nodes you name actually say, in full |
 | `plan_history(id, { limit? })` | Who changed what, newest first |
 | `set_plan_sources(id, { sourceSpecIds })` | Which plans this one was written from |
@@ -84,6 +85,21 @@ longer shows.
 `view: 'markdown'` returns the whole export with placement stripped. It is large.
 Use it when handing a plan to someone who will read it as prose, not to find one
 node.
+
+`next_task(id)` is the read for carrying a plan out. It answers with where the
+plan has got to, what is already started, what is blocked and on what, the tasks
+that can be started now — **each with its body** — and what is still waiting and
+for what. Ready means everything that flows into a task, and everything it
+depends on, is done or dropped.
+
+**Call it every turn rather than deciding for yourself.** The alternative is to
+read the outline, work out by eye which task's prerequisites are all settled,
+and then fetch that task's body: four steps, of which the third is the one that
+goes wrong on a long plan — a task already finished gets done twice, or one
+waiting on unfinished work gets started.
+
+Every other read now ends with the same one-line progress, so a plan reads as a
+thing being approached rather than as a list.
 
 `plan_history(id)` says who changed what, newest first, grouped by the act it
 arrived in. A plan is a drawing two parties share: when you come back to one you

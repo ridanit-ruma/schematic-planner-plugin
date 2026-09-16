@@ -269,6 +269,27 @@ for skill in skills/*/SKILL.md; do
 done
 
 echo
+echo "-- every skill names the excuse, not only the rule"
+
+# The device the forks dropped when they were condensed out of superpowers.
+# Prose describing correct behaviour is advice; a table naming the thought a
+# model is about to have is an interception. The originals carried 16, 19, 9
+# and 33 rows of it and these carried none.
+for s in \
+    using-schematic-planner executing-plans-on-canvas test-driven-development \
+    systematic-debugging verification-before-completion requesting-code-review \
+    receiving-code-review
+do
+    need_text "skills/$s/SKILL.md" '^## Red flags' "$s names its rationalisations"
+    rows=$(grep -c '^| ' "skills/$s/SKILL.md" 2>/dev/null || echo 0)
+    if [ "$rows" -ge 5 ]; then
+        ok "$s carries $rows table rows"
+    else
+        err "$s has only $rows table rows; a table of three is a list"
+    fi
+done
+
+echo
 echo "-- the setup references"
 
 for h in claude-code codex cursor kimi opencode; do

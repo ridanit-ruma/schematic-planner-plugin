@@ -5,8 +5,8 @@ description: Use when review findings arrive for a Plan task; verify each findin
 
 # Receiving code review
 
-Read the existing `review-spec-<task-slug>` and
-`review-quality-<task-slug>` comments in stage order. Treat findings as claims
+Read the existing the **Spec compliance** and **Quality** sections of the task's
+`evidence-<slug>` note in stage order. Treat findings as claims
 to investigate, not commands to obey or objections to dismiss.
 
 For each finding:
@@ -27,3 +27,15 @@ scope creep—record it without silently implementing it.
 Do not mark the task accepted until Spec compliance passes before code quality
 and both comments identify the result they reviewed. Feedback handling grants
 no authority to publish, merge, delete, or rewrite Git history.
+
+## Red flags
+
+These thoughts are the failure, not the way round it.
+
+| Thought | What is actually true |
+| --- | --- |
+| "The reviewer is probably right." | A finding is a claim to investigate. Locate it, reproduce it, then decide. |
+| "The reviewer is wrong, I will skip it." | Then reject it with the code, the requirement and a command — not with confidence. |
+| "It is a small improvement, I will just do it." | Outside the approved scope that is scope creep, however small. Record it instead of quietly building it. |
+| "Both stages came back clean, so it is done." | Only if both actually ran, and the note says which result each one reviewed. |
+| "I will fix the finding and rerun everything at the end." | Fix it test-first, like any other change. A finding is not a special case. |
