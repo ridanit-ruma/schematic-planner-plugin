@@ -184,16 +184,24 @@ need_text skills/writing-plans-on-canvas/SKILL.md 'Plan self-review' 'planning p
 for term in placeholder 'path and interface' 'task size'; do
     need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning self-review covers $term"
 done
-for term in list_plans plans set_plan_sources; do
-    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor discovers implementation plans with $term"
+# Short, stable things rather than sentences.
+#
+# These used to grep whole phrases out of the prose, which meant they were
+# checking the layout: reflowing a paragraph put "branch-wide review" on two
+# lines and broke a line-based grep, and sixteen checks failed for a rewrite
+# that had changed none of the requirements. A check on a tool name or a comment
+# prefix survives an edit to the sentence around it.
+for term in list_plans plans next_task read_nodes plan_history 'Written from'; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor reads the Plan with $term"
 done
-need_text skills/executing-plans-on-canvas/SKILL.md 'persistent active Plan' 'executor keeps no persistent active plan pointer'
-need_text skills/executing-plans-on-canvas/SKILL.md 'exactly one' 'executor runs exactly one ready task'
-need_text skills/executing-plans-on-canvas/SKILL.md 'Refuse to execute' 'executor rejects tasks outside a valid implementation Plan'
-need_text skills/executing-plans-on-canvas/SKILL.md 're-read every cited source Spec' 'executor refreshes source Specs before task selection'
-need_text skills/executing-plans-on-canvas/SKILL.md 'opaque `Revision:` token' 'executor uses product revision metadata when available'
+need_text skills/executing-plans-on-canvas/SKILL.md 'active-Plan pointer' 'executor keeps no active plan pointer'
+need_text skills/executing-plans-on-canvas/SKILL.md 'One task per turn' 'executor runs exactly one ready task'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Refuse to carry out' 'executor rejects tasks outside a valid implementation Plan'
+need_text skills/executing-plans-on-canvas/SKILL.md 'has not moved under you' 'executor refreshes source Specs before task selection'
+need_text skills/executing-plans-on-canvas/SKILL.md '`Revision:`' 'executor uses product revision metadata when available'
 need_text skills/executing-plans-on-canvas/SKILL.md 'Where neither is available' 'executor defines a pre-revision fallback'
-need_text skills/executing-plans-on-canvas/SKILL.md 'material drift' 'executor stops stale task execution'
+need_text skills/executing-plans-on-canvas/SKILL.md "in_progress" 'executor marks the task before it starts work'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Red flags' 'executor names the rationalisations rather than only the rules'
 for term in test-driven-development systematic-debugging verification-before-completion; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
     need_text README.md "$term" "README lists $term"
@@ -206,22 +214,25 @@ for term in subagent-driven-development dispatching-parallel-agents; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"
     need_text README.md "$term" "README lists $term"
 done
-need_text skills/executing-plans-on-canvas/SKILL.md 'Plan.*coordination ledger' 'executor uses the Plan as the coordination ledger'
+need_text skills/executing-plans-on-canvas/SKILL.md 'are the ledger' 'executor uses the Plan as the ledger'
 need_text skills/executing-plans-on-canvas/SKILL.md 'conflict scan' 'executor requires a pre-dispatch conflict scan'
 for term in dependency 'owned paths' interfaces configuration migrations; do
     need_text skills/dispatching-parallel-agents/SKILL.md "$term" "parallel conflict scan covers $term"
 done
-need_text skills/executing-plans-on-canvas/SKILL.md '[Rr]eturned.*Spec compliance.*before.*code quality' 'executor reviews returned work in stage order'
-need_text skills/executing-plans-on-canvas/SKILL.md '[Rr]esume.*Plan state' 'executor resumes orchestration from canvas state'
-need_text skills/executing-plans-on-canvas/SKILL.md '[Rr]eversible.*ruling' 'executor continues through reversible ambiguity with a ruling'
-need_text skills/executing-plans-on-canvas/SKILL.md 'Spec-compliance review.*before.*code-quality review' 'executor orders Spec review before quality review'
-for ledger in 'review-spec-<task-slug>' 'review-quality-<task-slug>' review-branch; do
+need_text skills/executing-plans-on-canvas/SKILL.md 'A report is a claim' 'executor reruns a delegated result rather than trusting it'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Resume from the canvas' 'executor resumes from canvas state'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Anything reversible' 'executor decides reversible ambiguity itself'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Spec-compliance review' 'executor orders Spec review before quality review'
+# Four comment prefixes, and the evidence note carries the stages that used to
+# have prefixes of their own.
+for ledger in 'q-<topic>' 'gate-<stage>' 'blocked-<slug>' 'evidence-<slug>' review-branch; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$ledger" "executor records $ledger"
 done
-need_text skills/executing-plans-on-canvas/SKILL.md '[Ii]mplementation approval.*not.*Git.*authority' 'executor preserves explicit Git authority'
-need_text skills/executing-plans-on-canvas/SKILL.md 'branch-wide review' 'executor requires final branch-wide review'
-need_text skills/executing-plans-on-canvas/SKILL.md 'evidence-<task-slug>' 'executor records one idempotent evidence ledger entry'
-need_text skills/executing-plans-on-canvas/SKILL.md 'ruling-<task-slug>' 'executor records safe reversible rulings'
+for stage in 'Spec compliance' Quality; do
+    need_text skills/executing-plans-on-canvas/SKILL.md "$stage" "the evidence note carries $stage"
+done
+need_text skills/executing-plans-on-canvas/SKILL.md 'not authority over the remote' 'executor preserves explicit Git authority'
+need_text skills/executing-plans-on-canvas/SKILL.md 'branch-wide' 'executor requires final branch-wide review'
 need_text skills/executing-plans-on-canvas/SKILL.md 'destructive or irreversible' 'executor narrows blocking to high-risk or external conditions'
 need_text README.md 'Spec never contains executable `task` nodes' 'README states the Spec content guard'
 need_text README.md 'upstream and downstream' 'README explains Spec impact tracing'

@@ -1,108 +1,168 @@
 ---
 name: executing-plans-on-canvas
-description: Use after implementation Plan approval to discover a Plan in the bound project's plans folder and execute one ready task while keeping canvas status accurate.
+description: Use after implementation Plan approval to carry out one ready task from a Plan in the bound project's plans folder, keeping the canvas honest as you go.
 ---
 
-# Executing one implementation task
+# Carrying out one task
 
-Read `.schematic-planner.json`, then run `list_plans` for its workspace and use
-only implementation Plans under the bound project's `plans` folder. An explicit
-Plan id or link wins; otherwise choose the single clear topical match. If more
-than one is plausible, stop for human selection. Keep no persistent active Plan
-pointer and never rewrite the project binding.
+The canvas is not a record of the work. It is where the work is visible while it
+happens, to somebody watching who did not ask you for a summary. That is the
+whole difference between this and a plan in a file, and most of what follows is
+about not throwing it away.
 
-Read the selected Plan with `get_plan(..., { view: "outline" })`. It answers
-with the tree, the flows, a `*` against every node that has a body, the open
-notes in full, and — under **Written from** — the Specs this Plan cites. A Plan
-that cites none is not executable under this workflow; `set_plan_sources` is how
-that link is made, as a field rather than a line of prose nothing can follow.
+One task per turn. Say which, by slug, before touching anything.
 
-**The outline gives you titles, not bodies.** So before doing anything, read the
-words: `read_nodes` the task you are about to carry out and the `constraints`
-note, and, when the task turns on design detail that is not in either, the
-nodes of the named source Spec that it cites. A task carried out from its title
-is a task carried out from a guess.
-Refuse to execute a task node found in a Spec, at project top level, or anywhere
-outside the bound project's `plans` folder; report its actual location instead
-of treating the canvas name as proof of stage.
+## 1. Find the Plan
 
-## Source Spec drift guard
+Read `.schematic-planner.json`, then `list_plans` for its workspace. Use only
+implementation Plans under the bound project's `plans` folder. An explicit id or
+link wins; otherwise the single clear topical match. If more than one is
+plausible, stop and ask — never guess between two Plans, and never rewrite the
+binding. Keep no active-Plan pointer; the address is in the conversation.
 
-Before selecting a ready task, re-read every cited source Spec, including its
-current decisions, affected flow, and comments.
+Refuse to carry out a task node found in a Spec, at the project top level, or
+anywhere outside `plans`. Report where it actually is rather than treating the
+canvas's name as proof of its stage.
 
-`plan_history` on the source is the cheapest way to see whether anything has
-moved: it names who changed what, newest first, grouped by the act it arrived
-in. `get_plan` also ends with an opaque `Revision:` token — when the Plan
-recorded one, compare them, and treat a mismatch as a reason to look rather
-than as proof of incompatibility. Where neither is available, compare the
-current affected graph, decisions, constraints, and gates with the Plan's task
-scope and recorded impact. Treat `updatedAt` as informational only.
+## 2. Ask the Plan what is next
 
-If a source now has an unresolved `q-` or `gate-`, or the comparison shows
-material drift in behavior, interfaces, constraints, or acceptance checks, do
-not start a task. Report the changed source and return the Plan to
-`writing-plans-on-canvas` for review or revision. Continue only when the current
-Spec still supports the approved task contract.
+```
+next_task(planId)
+```
 
-Treat the current Plan as the coordination ledger. Resume from Plan state by
-reading task statuses and existing `evidence-*`, `review-*`, `ruling-*`, and
-`blocked-*` comments rather than relying on agent memory or local orchestration
-files.
+It answers with where the Plan has got to, what is already started, what is
+blocked and on what, and the tasks that can be started now — each with its body.
+Take the first ready one. Do not read the whole outline and decide for yourself:
+that decision is where a task already finished gets done twice, and where one
+waiting on unfinished work gets started.
 
-Stop and report the Plan URL if any `q-` or `gate-` comment is unresolved.
-Select exactly one `planned` task whose `depends_on` prerequisites are all
-`done`. Read its complete body before changing local files, then set only that
-task to `in_progress` with `apply_ops`.
+Then read what the body does not carry: `read_nodes` the `constraints` note, and
+the nodes of the cited Spec when the task turns on design detail in neither.
+**A task carried out from its title is a task carried out from a guess.**
 
-## Optional agent orchestration
+Stop before starting if the Plan has an unresolved `q-` or `gate-` comment.
+Report the Plan URL and the waiting comments, and end the turn. Never poll.
 
-Sequential execution remains valid. When the runtime and user allow delegation,
-use `subagent-driven-development` for one independently bounded task. For two or
-more ready tasks, use `dispatching-parallel-agents` only after a conflict scan
-excludes dependency, owned-path, interface, shared-configuration, and migration
-overlap. Each agent still receives exactly one complete task contract; the
-coordinator owns integration, Plan comments, and final status.
+## 3. Check the Spec has not moved under you
 
-After any delegated result returns, inspect the actual repository and rerun its
-checks instead of trusting the report. Returned work receives Spec compliance review before code quality review.
-Record acceptance or rejection in the same task's ordinary evidence and review
-comments. Unexpected overlap falls back to one agent or sequential execution.
+Re-read every Spec the Plan cites; `get_plan` lists them under **Written from**.
+`plan_history` on a Spec is the cheapest way to see whether anything changed
+while you were away: who changed what, newest first. `get_plan` also
+ends with an opaque `Revision:` token; when the Plan recorded one, compare them,
+and treat a mismatch as a reason to look rather than proof of incompatibility.
+Where neither is available, compare the current affected graph, decisions,
+constraints and gates against the task's contract. `updatedAt` is informational
+only.
 
-Use `using-git-worktrees` only when concurrent work or isolation materially
-reduces risk; otherwise keep the current tree and preserve unrelated changes.
+If a Spec now has an unresolved `q-` or `gate-`, or its behaviour, interfaces,
+constraints or acceptance checks have moved away from that contract, do not
+start. Report the changed Spec and hand the Plan back to
+`writing-plans-on-canvas`.
 
-Use `test-driven-development` to observe the task's intended failing check and
-make the smallest passing change. If a failure is unexpected or persists, use
-`systematic-debugging` to reproduce it, trace its callers and shared path, and
-test one causal hypothesis. Before any success claim, use
-`verification-before-completion` to run fresh focused and proportionate broader
-checks.
+## 4. Move the node before you move the code
 
-After verification passes, execute the task's commit step only for its owned
-files. Then upsert exactly one resolved `evidence-<task-slug>` comment containing
-the failing baseline, implementation summary, verification commands and exit or
-result summaries, commit id, and explicit limitations. Update that same comment
-on retry.
+```
+apply_ops(planId, [{ op: 'upsert_node', node: { slug, status: 'in_progress' } }])
+```
 
-Use `requesting-code-review` to run Spec-compliance review before code-quality review.
-Persist the stages as `review-spec-<task-slug>` and
-`review-quality-<task-slug>` comments; use `receiving-code-review` when either
-stage returns findings. Set the task to `done` only after both stages pass, and
-never put execution status on a Spec.
+First, not last. Somebody is looking at this canvas, and between "I have chosen
+a task" and "here is the result" there is a stretch of minutes in which the
+drawing should not be still. Mark exactly one task; everything else stays as it
+is.
 
-When no implementation tasks remain, use `finishing-a-development-branch` for
-a final branch-wide review and record its result as `review-branch` before
-offering finish actions. Implementation approval is not Git mutation authority:
-push, PR, merge, deletion, discard, worktree removal, and history rewrite each
-require explicit user authority for the exact action and target immediately
-before it occurs. Never add co-author attribution unless explicitly requested.
+Then build it. `test-driven-development` for the failing check and the smallest
+change that satisfies it. `systematic-debugging` when a failure is unexpected or
+survives a fix. `verification-before-completion` before any claim that it works.
+`using-git-worktrees` only when isolation materially reduces risk; otherwise
+keep the current tree and leave unrelated changes alone.
 
-Reversible ambiguity uses a resolved `ruling-<task-slug>` comment with the
-choice and rationale, then continues. Mark
-the task `blocked` only for a destructive or irreversible action, missing user
-authority, an unresolved required gate, a genuine external impasse, or a
-required failure that remains after evidence-driven attempts. Upsert exactly one
-`blocked-<task-slug>` comment with evidence, attempts, and the recommended human
-decision, then report it and end without polling. Never recreate deleted nodes,
-change human layout, or silently switch Plans.
+The moment you are stuck on something only a person can settle, leave the
+`blocked-<slug>` note and set the status — then, not at the end of the turn. A
+question that arrives with the final report is a question the person could have
+been answering for the last ten minutes.
+
+## 5. Prove it, then say so on the canvas
+
+Commit only the files the task owns. Then upsert one resolved
+`evidence-<slug>` comment carrying the whole account of that task:
+
+- the failing baseline, and the command that produced it
+- what you changed
+- the verification commands, and their exit or result summaries
+- the commit id
+- **Spec compliance** — what `requesting-code-review` found, and what you did
+- **Quality** — the same, for the second stage
+- anything you decided along the way that could have gone either way, and why
+- what you know is still not covered
+
+One note per task, updated on retry, rather than four notes for somebody to
+assemble later. Use `receiving-code-review` when either stage returns findings.
+Set the task to `done` only after both stages pass, and never put execution
+status on a Spec.
+
+Then call `next_task` again. That is the loop.
+
+## 6. When the Plan runs out
+
+`next_task` says so. Use `finishing-a-development-branch` for a branch-wide
+review, record it as `review-branch`, then offer the finish actions.
+
+**Approval to implement is not authority over the remote.** Push, PR, merge,
+branch deletion, discard, worktree removal and history rewrite each need the
+user's word for that exact action on that exact target, immediately before it
+happens. Never add co-author attribution unless it is asked for.
+
+Never recreate a node a person deleted, never move what a person placed, and
+never quietly switch to another Plan.
+
+## The four notes, and no more
+
+| Prefix | For |
+| --- | --- |
+| `q-<topic>` | A question for a person, with the options as a task list |
+| `gate-<stage>` | A stage waiting on approval |
+| `blocked-<slug>` | A task stopped on something only a person can settle |
+| `evidence-<slug>` | The whole account of one task: baseline, change, checks, reviews, rulings, limits |
+
+There used to be seven. `ruling-` and the two `review-` prefixes each held one
+paragraph of the same story, and a story told in four notes is a story nobody
+reads. The server knows none of these — they are a convention, and a convention
+with seven parts is a convention that drifts.
+
+Mark a task `blocked` only for a destructive or irreversible act, missing
+authority, an unresolved gate, a genuine external impasse, or a required failure
+that survives real attempts to fix it. Anything reversible you decide yourself
+and write down in the evidence note.
+
+Resume from the canvas rather than from memory. The statuses and these notes
+are the ledger — not your recollection, and not a file on disk.
+
+## Delegating
+
+Sequential is always valid. One independently bounded task may go to
+`subagent-driven-development`. Two or more ready tasks may go to
+`dispatching-parallel-agents` **only** after a conflict scan clears dependency,
+owned paths, interfaces, shared configuration and migrations. Each agent gets
+exactly one complete task contract; you keep integration, the canvas and the
+statuses. Unexpected overlap falls back to one agent, or to sequential.
+
+When a delegated result comes back, inspect the repository and rerun its checks.
+A report is a claim, not evidence. Spec-compliance review comes before quality
+review, and acceptance or rejection goes in that task's own evidence note.
+
+## Red flags
+
+These thoughts are the failure, not the way round it.
+
+| Thought | What is actually true |
+| --- | --- |
+| "I read this Plan earlier, so I know what is next." | Somebody has been drawing on it. `next_task`, every turn. |
+| "I can see from the outline which task is ready." | That is the judgement `next_task` exists to replace, and the one a model gets wrong on a long Plan. |
+| "The title is clear enough to start from." | Then the body will cost you ten seconds. `read_nodes`. |
+| "I'll mark it in_progress once I have something to show." | Then the canvas is still for ten minutes while somebody watches it. Move the node first. |
+| "I'll raise the blocker in my final report." | They could have been answering it for the last ten minutes. |
+| "Two tasks look independent, so I'll run both." | Independent means the conflict scan cleared it, not that it looks that way. |
+| "The subagent says its checks passed." | A report is a claim. Rerun them. |
+| "It's approved, so I can push it." | Implementing is not remote authority. Ask for the exact action on the exact target. |
+| "The Spec probably hasn't changed." | `plan_history` costs one call and answers it. |
+| "This one is small, I'll skip the evidence note." | The note is how the next turn — yours or somebody else's — knows what was already proved. |
