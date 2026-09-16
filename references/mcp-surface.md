@@ -215,10 +215,19 @@ has a field.
 shown a coordinate field fills it in. Declare structure; call `layout` if you
 must; a node a human has dragged is pinned and stays where they put it.
 
-**`delete_edge` on a `flows_to` edge needs its `via`.** What sets a flow off is
-part of its identity, so an edge drawn with a trigger can only be named again
-with that trigger. Omit `via` only for an edge that never had one. Otherwise the
-flow you drew is one you can never remove.
+**What sets a flow off is part of its identity.** Two consequences, and both
+bite.
+
+`delete_edge` on a `flows_to` edge needs its `via`. An edge drawn with a
+trigger can only be named again with that trigger; omit `via` only for an edge
+that never had one. Otherwise the flow you drew is one you can never remove.
+
+And **correcting a trigger draws a second flow** rather than changing the first.
+To change what sets a flow off, put the `delete_edge` carrying the old `via` in
+the same batch as the `upsert_edge` carrying the new one. `apply_ops` says so
+when a batch leaves more than one flow running between a pair it drew — which
+is right when you meant two triggers, and is the warning you wanted when you
+did not.
 
 **`upsert_comment` does not accept `author`, and does not need one.** The
 server signs a note it carries as "<owner>'s agent", because it knows whose key
