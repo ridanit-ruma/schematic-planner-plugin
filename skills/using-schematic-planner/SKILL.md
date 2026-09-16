@@ -33,7 +33,9 @@ first clarifying question.
    idempotent `create_folder` calls. If historical duplicate names make either
    folder ambiguous, stop for human cleanup.
 6. Run `list_plans`, scoped to the binding's workspace, and use only the bound
-   project's folder-qualified inventory for routing.
+   project's folder-qualified inventory for routing. When the request names
+   something that might already be drawn, `search` for it before deciding that
+   nothing covers it — a title in the inventory is not the whole of a canvas.
 
 Treat stage and folder as one invariant:
 

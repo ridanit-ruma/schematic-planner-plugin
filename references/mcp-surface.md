@@ -15,6 +15,7 @@ The product README's tool table is slightly behind the code; this file is not.
 | `list_projects({ workspace? })` | Projects reachable by the key |
 | `create_project(...)` | Open a project |
 | `list_plans({ workspace? })` | Plans, grouped by workspace, project and folder |
+| `search({ query, workspace?, projectSlug?, limit? })` | Which plan something is drawn in |
 | `list_folders({ workspace?, projectSlug? })` | Non-nesting folders in one project, with plan counts |
 | `create_folder({ name, workspace?, projectSlug? })` | Ensure a folder exists |
 | `rename_folder({ folder, to, workspace?, projectSlug? })` | Rename a folder |
@@ -92,6 +93,14 @@ nothing moved.
 `list_plans` renders each project's folders and the plans filed under them. It
 also shows empty folders, because an agent that cannot see an empty `specs`
 drawer will create a duplicate or pile work at the project top level.
+
+`search({ query })` looks through node titles, identifiers, tags and bodies
+across every plan the key can reach and answers with the plans they are in.
+**Run it before drawing anything new.** A second plan of a system somebody
+already drew is how a workspace turns into a pile, and without this the only way
+to find the first one is to open every plan in turn — which is to say, nobody
+does. Words are matched literally and all of them have to be on one line of a
+body, so search for a name, not a sentence.
 
 ## Folders and filing
 
