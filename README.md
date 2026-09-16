@@ -65,11 +65,16 @@ that is the next section, and it is one command.
 ## Connect the canvas
 
 Get a key from your instance's agent settings — `/settings/agents`, or
-<https://schematic-planner.com/settings/agents>. Then, once, for every agent on
-the machine:
+<https://schematic-planner.com/settings/agents>. Then, once, in Claude Code:
+
+```
+/schematic-planner:connect sp_…
+```
+
+or from a shell, for every agent on the machine:
 
 ```sh
-scripts/connect --key sp_…
+scripts/connect sp_…
 ```
 
 It checks the key against the instance before writing anything, then merges a
@@ -79,9 +84,9 @@ leaving everything else in them alone. Start a new session afterwards: MCP
 servers connect at startup.
 
 ```sh
-scripts/connect --host https://planner.example.com --key sp_…   # self-hosted
-scripts/connect --client cursor --key sp_…                      # just one
-scripts/connect --print                                         # show, write nothing
+scripts/connect sp_… https://planner.example.com   # self-hosted
+scripts/connect sp_… --client cursor               # just one
+scripts/connect --print                            # show, write nothing
 ```
 
 Codex holds no credential of its own and reads `SCHEMATIC_PLANNER_KEY` from the
@@ -142,6 +147,7 @@ agent memory and repository-local orchestration state are never required.
 skills/          skill bodies — the only place behaviour is defined
 references/      the MCP surface, the binding schema, per-harness setup
 .claude-plugin/  plugin.json and marketplace.json
+commands/        /schematic-planner:connect, the short way in
 scripts/connect  points every agent on the machine at your instance
 hooks/           session-start injection, and its Windows wrapper
 scripts/         check.sh (structure, credentials), sync-harnesses.sh (drift)

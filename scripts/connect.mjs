@@ -93,7 +93,9 @@ function usage() {
   return [
     'Connect this machine to a Schematic Planner instance.',
     '',
-    '  --key <key>       Your agent key, from /settings/agents.',
+    '  --key <key>       Your agent key, from /settings/agents. The flag is',
+    '                    optional: a bare argument is read as the key, and one',
+    '                    that looks like a URL as the host.',
     '                    Falls back to $SCHEMATIC_PLANNER_KEY, then asks.',
     `  --host <url>      Default ${DEFAULT_HOST}. A self-hosted instance`,
     '                    replaces the host and nothing else.',
@@ -114,6 +116,10 @@ function parse(argv) {
     else if (flag === '--host' && value !== undefined) (options.host = value), (at += 1);
     else if (flag === '--key' && value !== undefined) (options.key = value), (at += 1);
     else if (flag === '--client' && value !== undefined) options.clients.push(value), (at += 1);
+    // A bare argument, because that is what a person types. `connect sp_… ` and
+    // `connect sp_… https://planner.example.com` both read the way they look.
+    else if (flag !== undefined && /^https?:\/\//.test(flag)) options.host = flag;
+    else if (flag !== undefined && !flag.startsWith('-') && options.key === null) options.key = flag;
     else return { error: `Unknown argument: ${flag}` };
   }
   return options;

@@ -303,6 +303,12 @@ for h in claude-code codex cursor kimi opencode; do
 done
 
 need_text skills/connecting-the-canvas/SKILL.md 'scripts/connect' 'the connect skill runs the connect script'
+need_file commands/connect.md
+need_text commands/connect.md '^description: ' 'the connect command says what it is'
+need_text commands/connect.md 'scripts/connect' 'the connect command runs the connect script'
+need_text commands/connect.md 'ARGUMENTS' 'the connect command passes what was typed'
+need_text skills/connecting-the-canvas/SKILL.md 'schematic-planner:connect' 'the connect skill offers the short way first'
+need_text hooks/session-start 'schematic-planner:connect' 'the session hook names the command, not only the skill'
 need_text skills/using-schematic-planner/SKILL.md 'connecting-the-canvas' 'the entry skill knows how to get connected'
 need_text hooks/session-start 'SCHEMATIC_PLANNER_KEY' 'the session hook notices a machine with no key'
 

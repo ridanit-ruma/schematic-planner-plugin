@@ -32,10 +32,17 @@ is what the script below does.
 
 ## Connect it
 
-One command, for every agent on the machine:
+If they are here to connect rather than in the middle of something else, the
+short way is theirs to type:
+
+```
+/schematic-planner:connect <their key>
+```
+
+Otherwise, one command, for every agent on the machine:
 
 ```sh
-"${CLAUDE_PLUGIN_ROOT}/scripts/connect" --key <the key>
+"${CLAUDE_PLUGIN_ROOT}/scripts/connect" <the key>
 ```
 
 It checks the key against the instance before writing anything, then writes the
