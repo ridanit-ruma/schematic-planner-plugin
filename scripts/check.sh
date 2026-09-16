@@ -169,7 +169,7 @@ need_text skills/brainstorming-on-canvas/SKILL.md '[Rr]euse' 'brainstorming reus
 need_text skills/brainstorming-on-canvas/SKILL.md 'After `create_plan` returns' 'brainstorming verifies placement after Spec creation'
 need_text skills/brainstorming-on-canvas/SKILL.md 'just-created' 'brainstorming limits folder correction to the new Spec'
 
-for term in list_plans create_plan plans Source-Specs; do
+for term in list_plans create_plan plans sourceSpecIds; do
     need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning skill creates folder-qualified plans with $term"
 done
 need_text skills/writing-plans-on-canvas/SKILL.md '[Nn]ever.*task.*Spec|do not.*task.*Spec' 'planning skill keeps executable tasks out of specs'
@@ -181,15 +181,15 @@ need_text skills/writing-plans-on-canvas/SKILL.md 'Plan self-review' 'planning p
 for term in placeholder 'path and interface' 'task size'; do
     need_text skills/writing-plans-on-canvas/SKILL.md "$term" "planning self-review covers $term"
 done
-for term in list_plans plans Source-Specs; do
+for term in list_plans plans set_plan_sources; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor discovers implementation plans with $term"
 done
 need_text skills/executing-plans-on-canvas/SKILL.md 'persistent active Plan' 'executor keeps no persistent active plan pointer'
 need_text skills/executing-plans-on-canvas/SKILL.md 'exactly one' 'executor runs exactly one ready task'
 need_text skills/executing-plans-on-canvas/SKILL.md 'Refuse to execute' 'executor rejects tasks outside a valid implementation Plan'
-need_text skills/executing-plans-on-canvas/SKILL.md 'Re-read every named source Spec' 'executor refreshes source Specs before task selection'
-need_text skills/executing-plans-on-canvas/SKILL.md 'opaque revision' 'executor uses product revision metadata when available'
-need_text skills/executing-plans-on-canvas/SKILL.md 'compatibility fallback' 'executor defines a pre-revision fallback'
+need_text skills/executing-plans-on-canvas/SKILL.md 're-read every cited source Spec' 'executor refreshes source Specs before task selection'
+need_text skills/executing-plans-on-canvas/SKILL.md 'opaque `Revision:` token' 'executor uses product revision metadata when available'
+need_text skills/executing-plans-on-canvas/SKILL.md 'Where neither is available' 'executor defines a pre-revision fallback'
 need_text skills/executing-plans-on-canvas/SKILL.md 'material drift' 'executor stops stale task execution'
 for term in test-driven-development systematic-debugging verification-before-completion; do
     need_text skills/executing-plans-on-canvas/SKILL.md "$term" "executor routes through $term"

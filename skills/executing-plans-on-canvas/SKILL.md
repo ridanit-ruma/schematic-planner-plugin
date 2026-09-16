@@ -11,21 +11,31 @@ Plan id or link wins; otherwise choose the single clear topical match. If more
 than one is plausible, stop for human selection. Keep no persistent active Plan
 pointer and never rewrite the project binding.
 
-Read the selected Plan with `get_plan(..., { view: "outline" })`. Its description
-must start with `Source-Specs: <plan-id>[, ...]`; a Plan without provenance is
-not executable under this workflow. Read its `constraints` note and, when a task
-depends on design detail not present there, read the named source Spec.
+Read the selected Plan with `get_plan(..., { view: "outline" })`. It answers
+with the tree, the flows, a `*` against every node that has a body, the open
+notes in full, and — under **Written from** — the Specs this Plan cites. A Plan
+that cites none is not executable under this workflow; `set_plan_sources` is how
+that link is made, as a field rather than a line of prose nothing can follow.
+
+**The outline gives you titles, not bodies.** So before doing anything, read the
+words: `read_nodes` the task you are about to carry out and the `constraints`
+note, and, when the task turns on design detail that is not in either, the
+nodes of the named source Spec that it cites. A task carried out from its title
+is a task carried out from a guess.
 Refuse to execute a task node found in a Spec, at project top level, or anywhere
 outside the bound project's `plans` folder; report its actual location instead
 of treating the canvas name as proof of stage.
 
 ## Source Spec drift guard
 
-Before selecting a ready task, Re-read every named source Spec, including its
-current decisions, affected flow, and comments. If both the Plan's recorded
-source state and the MCP read expose an opaque revision, compare those tokens;
-a mismatch triggers inspection rather than automatically proving incompatibility.
-When revision metadata is absent, use the compatibility fallback: compare the
+Before selecting a ready task, re-read every cited source Spec, including its
+current decisions, affected flow, and comments.
+
+`plan_history` on the source is the cheapest way to see whether anything has
+moved: it names who changed what, newest first, grouped by the act it arrived
+in. `get_plan` also ends with an opaque `Revision:` token — when the Plan
+recorded one, compare them, and treat a mismatch as a reason to look rather
+than as proof of incompatibility. Where neither is available, compare the
 current affected graph, decisions, constraints, and gates with the Plan's task
 scope and recorded impact. Treat `updatedAt` as informational only.
 

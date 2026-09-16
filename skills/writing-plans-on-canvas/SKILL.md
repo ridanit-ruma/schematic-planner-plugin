@@ -14,15 +14,20 @@ dependent flows, and required checks into the relevant task bodies and review
 context; do not copy unrelated branches of the Spec.
 
 Run `list_plans` for the bound project. Reuse a Plan in `plans` only when its
-scope matches and its description's first line names the same provenance:
-
-```text
-Source-Specs: <plan-id>[, <plan-id>...]
-```
+scope matches and it cites the same Spec — `get_plan` prints what a Plan was
+**Written from**, with each source's title, the drawer it is filed in, and
+whether it still resolves.
 
 Otherwise call `create_plan` with the bound workspace and project,
-`folder: "plans"`, a scope-specific title, and that `Source-Specs` line at the
-start of its description. After `create_plan` returns, run workspace-scoped
+`folder: "plans"`, a scope-specific title, and `sourceSpecIds: [<spec-id>]`.
+`set_plan_sources` changes the set later; it replaces the whole of it, so two
+callers cannot half-agree about where a Plan came from.
+
+Provenance is a field, not a sentence. An older Plan may carry it as a
+`Source-Specs: <plan-id>` line at the top of its description — read that when it
+is there, and set the field from it rather than writing another line. A field
+can say that a source has been deleted or moved out of the project. A line of
+prose says whatever it said the day it was written. After `create_plan` returns, run workspace-scoped
 `list_plans` and confirm that exact new id appears under the bound project's
 `plans` folder before writing tasks. If the just-created id is elsewhere, use
 `move_plan` to put only that id in `plans`, list again, and stop if placement
