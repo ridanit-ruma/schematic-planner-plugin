@@ -59,6 +59,9 @@ codex plugin add schematic-planner@schematic-planner
 Kimi Code reads the same manifests. Cursor reads `.cursor-plugin/plugin.json`.
 OpenCode loads `.opencode/plugins/schematic-planner.js`.
 
+Installing the plugin gives you the skills. It does not declare an MCP server —
+that is the next section, and it is one command.
+
 ## Connect the canvas
 
 Get a key from your instance's agent settings — `/settings/agents`, or
@@ -139,7 +142,7 @@ agent memory and repository-local orchestration state are never required.
 skills/          skill bodies — the only place behaviour is defined
 references/      the MCP surface, the binding schema, per-harness setup
 .claude-plugin/  plugin.json and marketplace.json
-.mcp.json        ships the canvas connection with the plugin
+scripts/connect  points every agent on the machine at your instance
 hooks/           session-start injection, and its Windows wrapper
 scripts/         check.sh (structure, credentials), sync-harnesses.sh (drift)
 ```

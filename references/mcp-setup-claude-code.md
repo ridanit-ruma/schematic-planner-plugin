@@ -61,8 +61,14 @@ claude mcp add --scope user --transport http schematic-planner \
 `--transport http` is not optional: without it a client has no way to know the
 URL names a remote server rather than a command to run.
 
-A project `.mcp.json` can be committed without the key, because Claude Code
-expands environment variables in it:
+The plugin no longer ships an `.mcp.json` of its own. One naming
+`${SCHEMATIC_PLANNER_KEY}` sat beside whatever the command above registers,
+under the same name, so a machine that had run it got both — the working server
+and a second one answering 401, with duplicate tools and a permanent error in
+the server list.
+
+A project `.mcp.json` is still yours to write, and can be committed without the
+key, because Claude Code expands environment variables in it:
 
 ```json
 {

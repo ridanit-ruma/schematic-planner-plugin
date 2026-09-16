@@ -107,10 +107,13 @@ need_file .claude-plugin/marketplace.json
 need_text .claude-plugin/marketplace.json '"name": "schematic-planner"' "marketplace lists the plugin"
 need_text .claude-plugin/marketplace.json '"source": "\./"' "marketplace sources the plugin from this repository"
 
-need_file .mcp.json
-need_text .mcp.json '"mcpServers"' "mcp.json uses the wrapped form"
-need_text .mcp.json '"schematic-planner"' "mcp.json names the server"
-need_text .mcp.json 'SCHEMATIC_PLANNER_KEY' "mcp.json takes its key from the environment"
+# The plugin declares no MCP server of its own. One that named
+# ${SCHEMATIC_PLANNER_KEY} sat beside whatever scripts/connect registers, under
+# the same name, so a machine that ran connect got the working server and the
+# broken one — duplicate tools and a permanent 401 in the client's server list.
+[ -f .mcp.json ] && err "the plugin should declare no MCP server; scripts/connect does that"
+need_file scripts/connect
+need_file scripts/connect.mjs
 
 need_file hooks/hooks.json
 need_text hooks/hooks.json 'SessionStart' "hook runs at session start"
@@ -277,7 +280,7 @@ echo "-- no credentials anywhere"
 # A key in a published file is the one mistake with no undo, so only the files
 # that actually ship are scanned. After "Bearer" there may be a variable or an
 # angle-bracket placeholder, and nothing else.
-shipped=".claude-plugin .mcp.json hooks .codex-plugin .cursor-plugin .kimi-plugin .opencode .agents skills references README.md"
+shipped=".claude-plugin hooks .codex-plugin .cursor-plugin .kimi-plugin .opencode .agents skills references README.md"
 present=""
 for p in $shipped; do
     [ -e "$p" ] && present="$present $p"
